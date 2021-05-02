@@ -15,7 +15,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Ty Fps"
+config/name="Try Fps"
 run/main_scene="res://Testing_Space.tscn"
 config/icon="res://icon.png"
 
