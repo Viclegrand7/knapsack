@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://ship2_modif.tscn" type="PackedScene" id=1]
+[ext_resource path="res://EnnemyScript.gd" type="Script" id=2]
 
 [sub_resource type="ConvexPolygonShape" id=1]
 points = PoolVector3Array( -0.318173, -0.981954, -1.95371, -0.297191, -1.58706, -2.86271, -0.297191, -1.58706, -2.66186, -0.297191, -1.38645, -2.86271, -0.297191, -1.28608, -2.26079, -0.297191, -0.884788, -2.26079, -0.297191, -0.884788, -1.95961, -0.0963856, -1.58706, -2.86271, 0.00386012, -1.38645, -2.86271, 0.204666, -1.08554, -1.95961, 0.505718, -1.18591, -2.66186, 0.907015, -1.48675, -2.36104, 1.00726, -0.884788, -2.26079, 1.50849, -1.38645, -2.56153, 1.60874, -1.48675, -2.46128, 1.60874, -1.48675, -2.36104, 2.21084, -1.38645, -2.16046, 2.41133, -1.28608, -2.36104, 2.41133, -1.08554, -2.36104, 2.61214, -0.884788, -2.16046, 2.71238, -1.18591, -1.95961, 2.91319, -0.985231, -2.06012, 2.91319, -0.985231, -1.95961, 2.91319, -0.884788, -1.95961 )
@@ -34,6 +35,7 @@ points = PoolVector3Array( -3.70887, 0.921472, -1.45797, -3.70887, 0.921472, -1.
 
 [node name="Spaceship" type="RigidBody"]
 gravity_scale = 0.0
+script = ExtResource( 2 )
 
 [node name="CollisionShape11" type="CollisionShape" parent="."]
 visible = false
@@ -76,3 +78,13 @@ visible = false
 shape = SubResource( 10 )
 
 [node name="ship2_modif" parent="." instance=ExtResource( 1 )]
+transform = Transform( -1.62921e-07, 0, 1, 0, 1, 0, -1, 0, -1.62921e-07, 0, 0, 0 )
+
+[node name="Area" type="Area" parent="."]
+
+[node name="CollisionPolygon" type="CollisionPolygon" parent="Area"]
+transform = Transform( -1.62921e-07, -1, -1.62921e-07, 0, -1.62921e-07, 1, -1, 1.62921e-07, 2.65431e-14, 0, 0, -9.5462 )
+depth = 6.0
+polygon = PoolVector2Array( 0, 0, 30, 15, 30, -15 )
+[connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
+[connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]
