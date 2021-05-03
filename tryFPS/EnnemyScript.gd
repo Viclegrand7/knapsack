@@ -14,7 +14,7 @@ func bullet_hit(damage, bullet_global_trans):
 
 func _process(_delta):
 	if target:
-		look_at(target.global_transform.origin, Vector3.UP)
+		look_at(target.global_transform.origin, global_transform.basis.y)
 
 
 func _on_Area_body_entered(body):
