@@ -7,8 +7,8 @@
 
 struct population {
 	int fitness;
-	std :: vector <int> parent;
-	population(int f, std :: vector <int> p) : fitness(f), parent(p) {}
+	std :: vector <bool> parent;
+	population(int f, std :: vector <bool> p) : fitness(f), parent(p) {}
 };
 
 bool customOrderingPopulation(population leftHandSign, population rightHandSign) {
@@ -26,9 +26,9 @@ class knapsack {
 	int att_population;
 public:
 	void initialize();
-	int fitness(std :: vector <int> item);
+	int fitness(std :: vector <bool> item);
 	void evaluation();
-	void mutation(std :: vector<int> &child);
+	void mutation(std :: vector<bool> &child);
 	std :: vector <population> crossover(population leftHandSign, population rightHandSign);
 	population run();
 
@@ -44,7 +44,7 @@ public:
 
 void knapsack :: initialize() {
 	for (unsigned int i = 0 ; i < att_population ; ++i) {
-		std :: vector <int> parent;
+		std :: vector <bool> parent;
 		for (unsigned int j = 0 ; j < att_weight.size() ; ++j)
 			parent.push_back(std :: rand() % 2);
 		att_parents.push_back(population(fitness(parent), parent));
@@ -52,17 +52,16 @@ void knapsack :: initialize() {
 	att_best = att_parents[0];
 }
 
-int knapsack :: fitness(std :: vector <int> item) {
+int knapsack :: fitness(std :: vector <bool> item) {
 	int sum_w(0);
 	int sum_p(0);
-	for (unsigned int i = 0 ; i < item.size() ; ++i)
-		if (item[i]) {
-			sum_w += att_weight[i];
-			sum_p += att_profits[i];
+	auto itemIterator(item.begin());
+	for (auto weightIterator(att_weight.begin()), profitIterator(att_profits.begin()) ; itemIterator != item.end() ; ++weightIterator, ++profitIterator)
+		if (*itemIterator++) {
+			sum_w += weightIterator;
+			sum_p += profitIterator;
 		}
-	if (sum_w > att_C)
-		return -1;
-	return sum_p;
+	return sum_w > att_C ? -1 : sum_p;
 }
 
 void knapsack :: evaluation() {
@@ -73,7 +72,7 @@ void knapsack :: evaluation() {
 		att_best_p.push_back(att_parents[i]);
 }
 
-void knapsack :: mutation(std :: vector<int> &child) {
+void knapsack :: mutation(std :: vector<bool> &child) {
 	for (int i = 0 ; i < child.size() ; ++i)
 		if (std :: rand() % 2)
 			child[i] = 1 - child[i];
@@ -81,8 +80,8 @@ void knapsack :: mutation(std :: vector<int> &child) {
 
 std :: vector <population> knapsack :: crossover(population leftHandSign, population rightHandSign) {
 	int threshold((std :: rand() % (leftHandSign.parent.size() - 2)) + 1);
-	std :: vector<int> tmp1;
-	std :: vector<int> tmp2;
+	std :: vector<bool> tmp1;
+	std :: vector<bool> tmp2;
 	for (unsigned int i = threshold ; i < leftHandSign.parent.size() ; ++i)
 		tmp1.push_back(leftHandSign.parent[i]);
 	for (unsigned int i = threshold ; i < rightHandSign.parent.size() ; ++i)
@@ -131,9 +130,10 @@ population knapsack :: run() {
 int main() {
 	std :: vector <int> weights({70, 73, 77, 80, 82, 87, 90, 94, 98, 106, 110, 113, 115, 118, 120});
 	std :: vector <int> profits({135, 139, 149, 150, 156, 163, 173, 184, 192, 201, 210, 214, 221, 229, 240});
-	int C = 750; /* Maximum capacity */
-	int popul = 100;
-	knapsack k(weights, profits, C, popul, 100);
+	int C(750); /* Maximum capacity */
+	int popul(100);
+	int iterations(100);
+	knapsack k(weights, profits, C, popul, iterations);
 	population test = k.run();
 	std :: cout << test.fitness << " is the fitness for vector [";
 	if (test.parent.size())

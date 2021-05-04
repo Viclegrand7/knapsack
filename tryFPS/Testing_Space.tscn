@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Spaceship.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ship2_modif.tscn" type="PackedScene" id=1]
+[ext_resource path="res://TPSPlayer.tscn" type="PackedScene" id=2]
 [ext_resource path="res://174550599_925620861594430_401748151133299725_n.png" type="Texture" id=4]
 
 [sub_resource type="PanoramaSky" id=1]
@@ -22,8 +22,8 @@ __meta__ = {
 "_editor_description_": "Tryin'a make space"
 }
 
-[node name="Spaceship2" parent="." instance=ExtResource( 1 )]
-mass = 200.0
-
 [node name="Player" parent="." instance=ExtResource( 2 )]
-transform = Transform( -0.0939064, 0, 0.0343742, 0, 0.1, 0, -0.0343742, 0, -0.0939064, 0, 0, 10.4545 )
+transform = Transform( 0.423492, 0, 0.26581, 0, 0.5, 0, -0.26581, 0, 0.423492, -12.1067, -1.59126, -0.942658 )
+
+[node name="ship2_modif2" parent="." instance=ExtResource( 1 )]
+transform = Transform( -0.4516, 0, 0.214609, 0, 0.5, 0, -0.214609, 0, -0.4516, 0.582507, 0.442828, -0.115174 )
