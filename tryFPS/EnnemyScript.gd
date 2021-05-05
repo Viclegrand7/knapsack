@@ -3,7 +3,8 @@ extends RigidBody
 const BASE_BULLET_BOOST = 9
 const DECREASE_RATE = 0.9
 const SPEED = 100
-const TURN_RATE = 20
+const TURN_RATE = 0.5
+const TURN_COMPENSATION = 1 - 0.01
 
 var target
 
@@ -21,10 +22,25 @@ func _process(delta):
 		var direction = global_transform.origin - target.global_transform.origin;
 		
 		var left_right = direction.dot(global_transform.basis.x)
-		add_torque(TURN_RATE  * left_right* global_transform.basis.y)
+		if abs(left_right) < 0.05:
+			angular_velocity.y *= TURN_COMPENSATION * delta
+#			if abs(left_right) > 0.05:
+#				var rotationForce = clamp(TURN_RATE / left_right, -TURN_COMPENSATION, TURN_COMPENSATION)
+#				apply_torque_impulse(- rotationForce * global_transform.basis.y)
+###
+#				var currentForcesOrSomething = get_inverse_inertia_tensor()
+#				add_torque(+ TURN_COMPENSATION * sign(left_right) * currentForcesOrSomething.y)
+		else:
+			apply_torque_impulse(TURN_RATE  * left_right * global_transform.basis.y)
 
 		var up_down = direction.dot(global_transform.basis.y)
-		add_torque(-TURN_RATE * up_down   * global_transform.basis.x) 
+		if abs(up_down) < 0.11:
+			var rotationForce = clamp(TURN_RATE / up_down, -TURN_COMPENSATION, TURN_COMPENSATION)
+			apply_torque_impulse(+ rotationForce * global_transform.basis.x)
+#			var currentForcesOrSomething = get_inverse_inertia_tensor()
+#			add_torque(+ TURN_COMPENSATION * sign(up_down) * currentForcesOrSomething.x)
+		else:
+			apply_torque_impulse(- TURN_RATE * up_down * global_transform.basis.x) 
 #		add_torque(+1000 * global_transform.basis.y) #Left
 #		add_torque(-1000 * global_transform.basis.y) #Right
 #		moveTowardsTarget(delta)
