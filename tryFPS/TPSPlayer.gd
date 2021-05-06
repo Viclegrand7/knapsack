@@ -8,8 +8,8 @@ export(float, 0.1, 1) var mouse_sensitivity : float = 0.3
 
 var vel : Vector3
 
-onready var rotation_helper = $CameraPivot
-onready var camera = $CameraPivot/SpringArm/Camera
+onready var rotation_helper = $xCameraPivot
+onready var camera = $xCameraPivot/yCameraPivot/SpringArm/Camera
 
 var dir = Vector3()
 
@@ -19,7 +19,17 @@ const MAX_SPRINTSPEED = 30
 const SPRINT_ACCELERATION = 18
 var isSprinting = false
 
+const TIME_BETWEEN_ATTACKS = 1
+var timeBeforeAttack = 0
+
 var flashlight
+
+var cannonManager = preload("res://Bullet_Scene.tscn")
+onready var muzzle = $xCameraPivot/Canons/Muzzle
+
+var timeShaking : float = 0
+const MAX_SHAKING_TIME = 0.5
+var doesShake = false
 
 #Weapon management
 #var animation_manager
@@ -63,16 +73,32 @@ func _ready():
 #	current_weapon_name  = "UNARMED"
 #	changing_weapon_name = "UNARMED"
 #
-	UI_status_label = $HUD/Panel/Gun_label
+	#UI_status_label = $HUD/Panel/Gun_label
 	#End of weapon management
 
 func _physics_process(delta):
 	process_input(delta)
 	process_movement(delta)
 #	process_changing_weapons(delta)
+	timeBeforeAttack = clamp(timeBeforeAttack - delta, 0, TIME_BETWEEN_ATTACKS)
+	camera_shake(float(1)/16)
+
+func camera_shake(time):
+	if not doesShake:
+		return
+	timeShaking += time
+	if timeShaking < MAX_SHAKING_TIME / 4:
+		camera.translate(Vector3(-0.3, -0.3,  0))
+	elif timeShaking < MAX_SHAKING_TIME / 2:
+		camera.translate(Vector3( 0.6,  0.3,  0))
+	elif timeShaking < MAX_SHAKING_TIME * 0.75:
+		camera.translate(Vector3(-0.6,  0.3,  0))
+	else:
+		camera.translate(Vector3(1, 1, 0))
+	if timeShaking == MAX_SHAKING_TIME:
+		doesShake = false
 
 func process_input(_delta):
-
 	# ----------------------------------
 	# Walking
 	dir = Vector3()
@@ -145,14 +171,16 @@ func process_input(_delta):
 #			changing_weapon_name = WEAPON_NUMBER_TO_NAME[weapon_change_number]
 #			changing_weapon = true
 #
-#	# ----------------------------------
-#	#Firing the weapons
-#	if Input.is_action_pressed("fire"):
-#		if not changing_weapon:
-#			var currentWeapon = weapons[current_weapon_name]
-#			if currentWeapon != null:
-#				if animation_manager.current_state == currentWeapon.IDLE_ANIM_NAME:
-#					animation_manager.set_animation(currentWeapon.FIRE_ANIM_NAME)
+	# ----------------------------------
+	#Firing the weapons
+	if Input.is_action_pressed("fire"):
+		if not timeBeforeAttack:
+			var scene_root = get_tree().root.get_children()[0]
+			var newShot = cannonManager.instance()
+			scene_root.add_child(newShot)
+			newShot.global_transform.origin = muzzle.global_transform.origin
+			newShot.direction = muzzle.global_transform.basis.y
+			timeBeforeAttack = TIME_BETWEEN_ATTACKS
 	#End of weapon management
 
 func process_movement(delta):
@@ -223,7 +251,13 @@ func _input(event):
 		if camera_rot.z > 90 || camera_rot.z < -90:
 #			print("blobjf")
 			self.rotate_y(deg2rad(+ event.relative.x * MOUSE_SENSITIVITY))
-#			print("      x = " , self.camera.taranslation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
+#			print("      x = " , self.camera.translation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
 		else:
 			self.rotate_y(deg2rad(- event.relative.x * MOUSE_SENSITIVITY))
 
+func bullet_hit(damage, _bullet_transform):
+	health -= damage
+	doesShake = true
+	timeShaking = 0
+	if health < 0:
+		print("FUUUUUUUKKKKKCCCCCC")
