@@ -19,8 +19,11 @@ const MAX_SPRINTSPEED = 30
 const SPRINT_ACCELERATION = 18
 var isSprinting = false
 
-const TIME_BETWEEN_ATTACKS = 1
+const TIME_BETWEEN_ATTACKS = 0.2
 var timeBeforeAttack = 0
+
+const TIME_BETWEEN_MISSILES = 1
+var timeBeforeMissile = 0
 
 var flashlight
 
@@ -30,6 +33,9 @@ onready var muzzle = $xCameraPivot/Canons/Muzzle
 var timeShaking : float = 0
 const MAX_SHAKING_TIME = 0.5
 var doesShake = false
+export var CAMERA_SHAKING_STRENGTH = 0.2
+
+var soundManager = preload("res://Simple_Audio_Player.tscn")
 
 #Weapon management
 #var animation_manager
@@ -49,7 +55,7 @@ var UI_status_label
 func _ready():
 #	camera = $Rotation_Helper/Camera
 #	rotation_helper = $CameraPivot
-	flashlight = [$CameraPivot/Cube011_Cube017/FlashLight1, $CameraPivot/Cube011_Cube017/FlashLight2]
+	flashlight = [$xCameraPivot/Cube011_Cube017/FlashLight1, $xCameraPivot/Cube011_Cube017/FlashLight2]
 
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
@@ -81,6 +87,7 @@ func _physics_process(delta):
 	process_movement(delta)
 #	process_changing_weapons(delta)
 	timeBeforeAttack = clamp(timeBeforeAttack - delta, 0, TIME_BETWEEN_ATTACKS)
+	timeBeforeMissile = clamp(timeBeforeMissile - delta, 0, TIME_BETWEEN_MISSILES)
 	camera_shake(float(1)/16)
 
 func camera_shake(time):
@@ -88,13 +95,17 @@ func camera_shake(time):
 		return
 	timeShaking += time
 	if timeShaking < MAX_SHAKING_TIME / 4:
-		camera.translate(Vector3(-0.3, -0.3,  0))
+		camera.translate(-    camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
+		camera.translate(     camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
 	elif timeShaking < MAX_SHAKING_TIME / 2:
-		camera.translate(Vector3( 0.6,  0.3,  0))
+		camera.translate( 1 * camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
+		camera.translate(-    camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
 	elif timeShaking < MAX_SHAKING_TIME * 0.75:
-		camera.translate(Vector3(-0.6,  0.3,  0))
+		camera.translate(-1 * camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
+		camera.translate(     camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
 	else:
-		camera.translate(Vector3(1, 1, 0))
+		camera.translate(     camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
+		camera.translate(-    camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
 	if timeShaking == MAX_SHAKING_TIME:
 		doesShake = false
 
@@ -124,6 +135,8 @@ func process_input(_delta):
 	# Sprinting
 	if Input.is_action_pressed("movement_sprint"):
 		isSprinting = true
+		if not timeBeforeAttack:
+			timeBeforeAttack = TIME_BETWEEN_ATTACKS
 	else:
 		isSprinting = false
 
@@ -180,7 +193,19 @@ func process_input(_delta):
 			scene_root.add_child(newShot)
 			newShot.global_transform.origin = muzzle.global_transform.origin
 			newShot.direction = muzzle.global_transform.basis.y
+			newShot.BULLET_DAMAGE = 2
 			timeBeforeAttack = TIME_BETWEEN_ATTACKS
+			playSound("laser3")
+			
+	if Input.is_action_just_pressed("secondaryAction"):
+		if not timeBeforeMissile:
+			var scene_root = get_tree().root.get_children()[0]
+			var newShot = cannonManager.instance()
+			scene_root.add_child(newShot)
+			newShot.global_transform.origin = muzzle.global_transform.origin
+			newShot.direction = muzzle.global_transform.basis.y
+			timeBeforeMissile = TIME_BETWEEN_MISSILES
+			playSound("cannon")
 	#End of weapon management
 
 func process_movement(delta):
@@ -261,3 +286,9 @@ func bullet_hit(damage, _bullet_transform):
 	timeShaking = 0
 	if health < 0:
 		print("FUUUUUUUKKKKKCCCCCC")
+
+func playSound(name):
+	var audioClone = soundManager.instance()
+	var sceneRoot = get_tree().root.get_children()[0]
+	sceneRoot.add_child(audioClone)
+	audioClone.playSound(name)
