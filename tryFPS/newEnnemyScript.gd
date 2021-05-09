@@ -31,7 +31,7 @@ func bullet_hit(damage, bulletGlobalTransform):
 	set_alert_state()
 	move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
 	if health < 0 :
-		print("Ok I'm dead")
+		print("Ok I'm dead, stop it")
 
 func _process(delta):
 	if needToFight and target:

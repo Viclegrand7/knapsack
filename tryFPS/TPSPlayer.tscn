@@ -163,8 +163,6 @@ spring_length = 4.0
 [node name="Camera" type="Camera" parent="xCameraPivot/yCameraPivot/SpringArm"]
 transform = Transform( 1, 0, 0, 0, 0.990268, 0.139173, 0, -0.139173, 0.990268, 0, 0, 0 )
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="xCameraPivot"]
-
 [node name="Canons" type="MeshInstance" parent="xCameraPivot"]
 transform = Transform( -1.31134e-08, 0.3, 0, -0.3, -1.31134e-08, 0, 0, 0, 0.3, 2.43355, -0.213314, -0.0658504 )
 mesh = SubResource( 9 )

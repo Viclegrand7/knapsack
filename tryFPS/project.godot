@@ -19,6 +19,10 @@ config/name="Try Fps"
 run/main_scene="res://Testing_Space.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+GameManager="*res://Item.gd"
+
 [input]
 
 ui_left={
