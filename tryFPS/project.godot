@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Resource",
+"class": "GenericItem",
+"language": "GDScript",
+"path": "res://Item.gd"
+} ]
 _global_script_class_icons={
-
+"GenericItem": ""
 }
 
 [application]
@@ -21,7 +26,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-GameManager="*res://Item.gd"
+GameManager="res://Item.gd"
 
 [input]
 

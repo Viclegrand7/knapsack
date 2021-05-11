@@ -29,6 +29,7 @@ func bullet_hit(damage, bulletGlobalTransform):
 	health -= damage
 	needToFight = true
 	set_alert_state()
+# warning-ignore:return_value_discarded
 	move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
 	if health < 0 :
 		print("Ok I'm dead, stop it")
@@ -40,8 +41,8 @@ func _process(delta):
 		if timeSinceLastRepair > TIME_BETWEEN_REPAIRS:
 			timeSinceLastRepair -= TIME_BETWEEN_REPAIRS
 			autoRepair()
-		rotate_towards_ennemy(delta, target)
-		move_towards_ennemy(delta, target)
+		rotate_towards_ennemy(delta)
+		move_towards_ennemy(delta)
 		attack(delta)
 
 func attack(delta):
@@ -60,7 +61,7 @@ func autoRepair():
 		set_normal_state()
 		needToFight = false
 
-func move_towards_ennemy(delta, target):
+func move_towards_ennemy(delta):
 	var distance = global_transform.origin.distance_to(target.global_transform.origin)
 	if distance > NORMAL_SHOOTING_RANGE:
 		var direction = global_transform.origin.direction_to(target.global_transform.origin)
@@ -87,7 +88,7 @@ func move_towards_ennemy(delta, target):
 		velocity = move_and_slide(velocity, Vector3(0, 1, 0), false, 4, 0.75398, false)
 
 
-func rotate_towards_ennemy(delta, target):
+func rotate_towards_ennemy(_delta):
 	var desiredRotation = global_transform.looking_at(target.global_transform.origin, Vector3(0, 1, 0))
 	var transform = Quat(global_transform.basis.get_rotation_quat()).slerp(desiredRotation.basis.get_rotation_quat(), 0.05)
 #	global_transform = Transform(transform, global_transform.origin)

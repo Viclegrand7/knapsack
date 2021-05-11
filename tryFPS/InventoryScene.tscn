@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://InventoryManager.gd" type="Script" id=1]
-[ext_resource path="res://InventoryScene.gd" type="Script" id=2]
+[ext_resource path="res://ItemPrecision.gd" type="Script" id=1]
+[ext_resource path="res://InventoryManager.gd" type="Script" id=2]
+[ext_resource path="res://PlayerInventory.gd" type="Script" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.329412, 0.152941, 0, 1 )
@@ -29,6 +30,7 @@ margin_left = -0.351997
 margin_top = 3.8147e-06
 margin_right = -0.207977
 margin_bottom = 3.05176e-05
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": true
 }
@@ -51,7 +53,7 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_colors/font_color = Color( 0.913725, 0.94902, 0.286275, 1 )
-text = "Username"
+text = "Player"
 align = 1
 valign = 1
 __meta__ = {
@@ -62,8 +64,9 @@ __meta__ = {
 anchor_top = 0.093
 anchor_right = 1.0
 anchor_bottom = 0.933
+margin_left = 2.0
 margin_top = 0.150002
-margin_right = -1.52588e-05
+margin_right = -2.00002
 margin_bottom = 0.149994
 __meta__ = {
 "_edit_use_anchors_": false
@@ -103,7 +106,6 @@ margin_left = 0.208008
 margin_top = 3.8147e-06
 margin_right = 0.35199
 margin_bottom = 3.05176e-05
-script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -124,7 +126,7 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_colors/font_color = Color( 0.913725, 0.94902, 0.286275, 1 )
-text = "RandomVendor"
+text = "Vendor"
 align = 1
 valign = 1
 __meta__ = {
@@ -135,8 +137,9 @@ __meta__ = {
 anchor_top = 0.093
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 2.0
 margin_top = 0.150002
-margin_right = 1.52588e-05
+margin_right = -1.99998
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -152,6 +155,7 @@ anchor_bottom = 0.85
 margin_left = -0.384003
 margin_top = 3.05176e-05
 margin_right = 0.384033
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -180,12 +184,17 @@ custom_colors/font_color = Color( 0.913725, 0.94902, 0.286275, 1 )
 text = "Item Description"
 align = 1
 valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ItemDescription" type="Label" parent="ItemPrecision"]
-visible = false
 anchor_top = 0.28
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_top = 1.14441e-05
 margin_right = -1.52588e-05
 margin_bottom = 4.57764e-05
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -1,31 +1,33 @@
 extends Resource
-#class_name GameManager
+class_name GenericItem
 
-const ressourcePath = "res://assets/items/"
-const fileName = "statistics"
+var itemName : String
+var itemDescription : String
+var itemValues : Array
+var itemWeights : Array
+var currentValue = null
+var currentWeight = null
+var texture
 
-export var playerScore : int = 0 #Total value
-export var playerInventory : Array = [] #Our current inventory, used to sell items
+func initialize(name, description, values, weights, texturePath):
+	itemName = name
+	itemDescription = description
+	itemValues = values
+	itemWeights = weights
+	texture = load(texturePath)
 
-export var fullItemList : Array = [] #All the items we added ourself
-export var itemStatisticsDictionary : Dictionary = {} #Their stats
+func setWeightValue(planetGravity):
+	currentWeight = itemWeights[planetGravity]
+	currentValue = itemValues[randi() % itemValues.size()]
 
-export var vendorPossibilitiesInventory : Array = [] #No doubles, no item we just sold to him
-export var vendorInventory : Array = [] #The actual inventory
+func giveName():
+	return itemName
 
-#Exemple: 
-#	"worm" : [
-#				[30, 20, 45], /* <===== 3 valeurs possibles, choisies en random. Permet de représenter la richesse de la planète, le fiat que certaines ressources soient abondantes,... */
-#				[5, 19, 12],  /* <===== 3 poids possibles, selon la planète (et sa gravite) */
-#				"Si vous comptiez vous lancer dans l'élevage d'asticots, voilà le moment de commencer ! Mais s'il vous plaît, éloignez le de votre bouche..." /* <===== Description de l'objet */
-#			 ]
+func giveValue():
+	return currentValue
 
-signal planetInventoryInitialized #When the planet's inventory has been set up
+func giveWeight():
+	return currentWeight
 
-func _ready():
-	var file = File.new()
-	file.open(ressourcePath + fileName, File.READ)
-	var itemList = file.get_line()
-	fullItemList = JSON.parse(itemList).result
-	var dictionary = file.get_line()
-	itemStatisticsDictionary = JSON.parse(dictionary).result
+func giveDescription():
+	return itemDescription
