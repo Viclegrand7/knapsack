@@ -6,12 +6,10 @@ export var DEACCEL : float = 1
 
 export(float, 0.1, 1) var mouse_sensitivity : float = 0.3
 
-var vel : Vector3 = Vector3(0, 0, 0)
+var vel : Vector3
 
-onready var rotation_helper = $yCameraPivot
-onready var camera = $yCameraPivot/SpringArm/Camera
-
-onready var reactors = [$yCameraPivot/LeftExhaust, $yCameraPivot/RightExhaust]
+onready var rotation_helper = $CameraPivot
+onready var camera = $CameraPivot/SpringArm/Camera
 
 var dir = Vector3()
 
@@ -21,26 +19,7 @@ const MAX_SPRINTSPEED = 30
 const SPRINT_ACCELERATION = 18
 var isSprinting = false
 
-var timeShaking : float = 0
-const MAX_SHAKING_TIME = 0.5
-var doesShake = false
-export var CAMERA_SHAKING_STRENGTH = 0.2
-
-const TIME_BETWEEN_ATTACKS = 0.2
-var timeBeforeAttack = 0
-var laserFromRight : int = 1
-
-const TIME_BETWEEN_MISSILES = 1
-var timeBeforeMissileLeft = 0
-var timeBeforeMissileRight = 0
-
 var flashlight
-
-var cannonManager = preload("res://Bullet_Scene.tscn")
-var cannonMuzzles = []
-var laserMuzzles = []
-
-var soundManager = preload("res://Simple_Audio_Player.tscn")
 
 #Weapon management
 #var animation_manager
@@ -60,9 +39,8 @@ var UI_status_label
 func _ready():
 #	camera = $Rotation_Helper/Camera
 #	rotation_helper = $CameraPivot
-	flashlight = [$yCameraPivot/FlashLight1, $yCameraPivot/FlashLight2]
-	cannonMuzzles = [$yCameraPivot/LeftMuzzle, $yCameraPivot/RightMuzzle]
-	laserMuzzles = [$yCameraPivot/LaserLeftMuzzle, $yCameraPivot/LaserRightMuzzle]
+	flashlight = [$CameraPivot/Cube011_Cube017/FlashLight1, $CameraPivot/Cube011_Cube017/FlashLight2]
+
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	
 	#Weapon management
@@ -85,39 +63,16 @@ func _ready():
 #	current_weapon_name  = "UNARMED"
 #	changing_weapon_name = "UNARMED"
 #
-	#UI_status_label = $HUD/Panel/Gun_label
+	UI_status_label = $HUD/Panel/Gun_label
 	#End of weapon management
-
-func _process(delta):
-	timeBeforeAttack = clamp(timeBeforeAttack - delta, 0, TIME_BETWEEN_ATTACKS)
-	timeBeforeMissileLeft = clamp(timeBeforeMissileLeft - delta, 0, TIME_BETWEEN_MISSILES)
-	timeBeforeMissileRight = clamp(timeBeforeMissileRight - delta, 0, TIME_BETWEEN_MISSILES)
 
 func _physics_process(delta):
 	process_input(delta)
 	process_movement(delta)
 #	process_changing_weapons(delta)
-	if doesShake:
-		camera_shake(float(1)/16)
-
-func camera_shake(time):
-	timeShaking += time
-	if timeShaking < MAX_SHAKING_TIME / 4:
-		camera.translate(-    camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
-		camera.translate(     camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
-	elif timeShaking < MAX_SHAKING_TIME / 2:
-		camera.translate( 1 * camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
-		camera.translate(-    camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
-	elif timeShaking < MAX_SHAKING_TIME * 0.75:
-		camera.translate(-1 * camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
-		camera.translate(     camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
-	else:
-		camera.translate(     camera.global_transform.basis.z * CAMERA_SHAKING_STRENGTH)
-		camera.translate(-    camera.global_transform.basis.y * CAMERA_SHAKING_STRENGTH)
-	if timeShaking == MAX_SHAKING_TIME:
-		doesShake = false
 
 func process_input(_delta):
+
 	# ----------------------------------
 	# Walking
 	dir = Vector3()
@@ -149,7 +104,12 @@ func process_input(_delta):
 	# ----------------------------------
 	# Flashlight toggle on/off
 	if Input.is_action_just_pressed("flashlight_toggle"):
-		toggleFlashlight()
+		if flashlight[0].is_visible_in_tree():
+			flashlight[0].hide()
+			flashlight[1].hide()
+		else:
+			flashlight[0].show()
+			flashlight[1].show()
 
 	# ----------------------------------
 	# Capturing/Freeing the cursor
@@ -185,53 +145,24 @@ func process_input(_delta):
 #			changing_weapon_name = WEAPON_NUMBER_TO_NAME[weapon_change_number]
 #			changing_weapon = true
 #
-	# ----------------------------------
-	#Firing the weapons
-	if Input.is_action_pressed("fire"):
-		laser()
-			
-	if Input.is_action_just_pressed("secondaryAction"):
-		missile()
+#	# ----------------------------------
+#	#Firing the weapons
+#	if Input.is_action_pressed("fire"):
+#		if not changing_weapon:
+#			var currentWeapon = weapons[current_weapon_name]
+#			if currentWeapon != null:
+#				if animation_manager.current_state == currentWeapon.IDLE_ANIM_NAME:
+#					animation_manager.set_animation(currentWeapon.FIRE_ANIM_NAME)
 	#End of weapon management
-
-func laser():
-	if not timeBeforeAttack:
-		var scene_root = get_tree().root.get_children()[0]
-		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
-		scene_root.add_child(newShot)
-		newShot.global_transform.origin = laserMuzzles[laserFromRight].global_transform.origin
-		newShot.direction = 2 * laserMuzzles[laserFromRight].global_transform.basis.x
-		laserFromRight = 1 - laserFromRight
-		newShot.BULLET_DAMAGE = 2
-		timeBeforeAttack = TIME_BETWEEN_ATTACKS
-		playSound("laser3")
-
-func missile():
-	if not timeBeforeMissileLeft:
-		var scene_root = get_tree().root.get_children()[0]
-		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
-		scene_root.add_child(newShot)
-		newShot.global_transform.origin = cannonMuzzles[0].global_transform.origin
-		newShot.direction = cannonMuzzles[0].global_transform.basis.x
-		timeBeforeMissileLeft = TIME_BETWEEN_MISSILES
-		playSound("cannon")
-	elif not timeBeforeMissileRight:
-		var scene_root = get_tree().root.get_children()[0]
-		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
-		scene_root.add_child(newShot)
-		newShot.global_transform.origin = cannonMuzzles[1].global_transform.origin
-		newShot.direction = cannonMuzzles[1].global_transform.basis.x
-		timeBeforeMissileRight = TIME_BETWEEN_MISSILES
-		playSound("cannon")
 
 func process_movement(delta):
 #	dir.y = 0
 	dir = dir.normalized()
 
 #	vel.y += delta * GRAVITY
+
+	var hvel = vel
+#	hvel.y = 0
 
 	var target = dir
 	if isSprinting:
@@ -240,16 +171,18 @@ func process_movement(delta):
 		target *= MAX_SPEED
 
 	var accel
-	accel = (SPRINT_ACCELERATION if isSprinting else ACCEL) if dir.dot(vel) > 0 else DEACCEL
+	if dir.dot(hvel) > 0:
+		if isSprinting:
+			accel = SPRINT_ACCELERATION
+		else:
+			accel = ACCEL
+	else:
+		accel = DEACCEL
 
-	vel = vel.linear_interpolate(target, accel * delta)
-	for reactor in reactors:
-		reactor.scale = Vector3(1, 8 * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)), 1)
-
-	camera.global_translate(camera.global_transform.basis.z * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)))
-
+	hvel = hvel.linear_interpolate(target, accel * delta)
 #	vel.x = hvel.x
 #	vel.z = hvel.z
+	vel = hvel
 #	vel = move_and_slide(vel, Vector3(0, 1, 0), 0.05, 4, deg2rad(MAX_SLOPE_ANGLE))
 	vel = move_and_slide(vel, Vector3(0, 1, 0), false, 4, 0.785398, false)
 
@@ -290,27 +223,7 @@ func _input(event):
 		if camera_rot.z > 90 || camera_rot.z < -90:
 #			print("blobjf")
 			self.rotate_y(deg2rad(+ event.relative.x * MOUSE_SENSITIVITY))
-#			print("      x = " , self.camera.translation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
+#			print("      x = " , self.camera.taranslation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
 		else:
 			self.rotate_y(deg2rad(- event.relative.x * MOUSE_SENSITIVITY))
 
-func bullet_hit(damage, _bullet_transform):
-	health -= damage
-	doesShake = true
-	timeShaking = 0
-	if health < 0:
-		print("FUUUUUUUKKKKKCCCCCC")
-
-func playSound(name):
-	var audioClone = soundManager.instance()
-	var sceneRoot = get_tree().root.get_children()[0]
-	sceneRoot.add_child(audioClone)
-	audioClone.playSound(name)
-
-func toggleFlashlight():
-	if flashlight[0].is_visible_in_tree():
-		flashlight[0].hide()
-		flashlight[1].hide()
-	else:
-		flashlight[0].show()
-		flashlight[1].show()

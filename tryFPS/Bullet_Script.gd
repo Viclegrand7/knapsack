@@ -1,13 +1,10 @@
 extends Spatial
 
-var BULLET_SPEED = 140
+var BULLET_SPEED = 70
 var BULLET_DAMAGE = 15
-var BULLET_ROTATION = 2
 
 const KILL_TIMER = 4
 var timer = 0
-
-var direction
 
 var hit_something = false
 
@@ -15,10 +12,8 @@ func _ready():
 	$Area.connect("body_entered", self, "collided")
 
 func _physics_process(delta):
-	global_translate(direction * BULLET_SPEED * delta)
-#	rotate_x(-1 * BULLET_ROTATION * delta)
-#	rotate_y(+2 * BULLET_ROTATION * delta)
-#	rotate_z(-1 * BULLET_ROTATION * delta)
+	var forward_dir = global_transform.basis.z.normalized()
+	global_translate(forward_dir * BULLET_SPEED * delta)
 	
 	timer += delta
 	if timer > KILL_TIMER:

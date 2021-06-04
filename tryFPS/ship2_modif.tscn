@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=21 format=2]
 
 [ext_resource path="res://Hull Color.material" type="Material" id=1]
 [ext_resource path="res://Stvol.material" type="Material" id=2]
@@ -6,7 +6,7 @@
 [ext_resource path="res://Intakes.material" type="Material" id=4]
 [ext_resource path="res://Reactors.material" type="Material" id=5]
 [ext_resource path="res://Wings.material" type="Material" id=6]
-[ext_resource path="res://newEnnemyScript.gd" type="Script" id=7]
+[ext_resource path="res://EnnemyScript.gd" type="Script" id=7]
 
 [sub_resource type="ArrayMesh" id=1]
 resource_name = "Cylinder.001"
@@ -124,9 +124,9 @@ points = PoolVector3Array( -3.71803, 1.31833, -1.11644, -3.71803, 1.31833, -0.91
 [sub_resource type="ConvexPolygonShape" id=13]
 points = PoolVector3Array( -3.71803, -1.37209, -1.11644, -3.71803, -1.37209, -0.917132, -3.71803, -1.27255, -1.11644, -3.71803, -1.27255, -0.917132, -3.31917, -1.47191, -0.917132, -2.7215, -0.873848, -1.01686, -2.7215, -0.873848, -0.917132, -2.52207, -2.26877, -1.41532, -2.52207, -2.26877, -1.21601, -2.52207, -2.06928, -1.41532, -2.52207, -2.06928, -1.11644, -1.82516, -0.873848, -1.01686, -1.82516, -0.873848, -0.917132, -1.52617, -2.06928, -1.41532, -1.42661, -2.26877, -1.41532, -1.42661, -2.26877, -1.21601, -1.22718, -2.06928, -1.11644, -0.828629, -1.57131, -0.917132, -0.529639, -1.27255, -1.01686, -0.529639, -1.27255, -0.917132, -0.529639, -0.973525, -1.01686, -0.529639, -0.973525, -0.917132 )
 
-[sub_resource type="SphereShape" id=14]
-
-[node name="ship2_modif" type="KinematicBody"]
+[node name="ship2_modif" type="RigidBody"]
+mass = 10.2041
+gravity_scale = 0.0
 script = ExtResource( 7 )
 
 [node name="Canons" type="MeshInstance" parent="."]
@@ -175,17 +175,14 @@ shape = SubResource( 12 )
 transform = Transform( -1.62921e-07, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, -1.62921e-07, 7.12149e-15, 0, 0, 0 )
 shape = SubResource( 13 )
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
 [node name="Area" type="Area" parent="."]
-transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 0, 0 )
+transform = Transform( -0.0177491, 0.999842, -1.62895e-07, 0, -1.62921e-07, -1, -0.999842, -0.0177491, 2.8917e-09, 0, 0, -9.23531 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Area"]
-transform = Transform( 50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0 )
-shape = SubResource( 14 )
-
-[node name="Thrustle" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.66025 )
-
-[node name="Turrets" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.574366, -10.2195 )
+[node name="CollisionPolygon" type="CollisionPolygon" parent="Area"]
+transform = Transform( 1, 1.86265e-09, 0, -1.86265e-09, 1, 4.47906e-15, -2.22045e-16, -9.75608e-15, 1, 0, 0, 1.53113e-06 )
+depth = 15.0
+polygon = PoolVector2Array( 0, 0, 30, -15, 30, 15 )
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
 [connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]
