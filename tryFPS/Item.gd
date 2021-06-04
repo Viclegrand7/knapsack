@@ -1,4 +1,4 @@
-extends Resource
+extends TextureRect
 class_name GenericItem
 
 var itemName : String
@@ -7,14 +7,16 @@ var itemValues : Array
 var itemWeights : Array
 var currentValue = null
 var currentWeight = null
-var texture
+#var texture
 
-func initialize(name, description, values, weights, texturePath):
+func _init(name, description, values, weights, texturePath):
 	itemName = name
 	itemDescription = description
 	itemValues = values
 	itemWeights = weights
 	texture = load(texturePath)
+	var maxFactor = max(float(75) / texture.get_height(), float(75) / texture.get_width())
+	rect_scale = Vector2(maxFactor, maxFactor)
 
 func setWeightValue(planetGravity):
 	currentWeight = itemWeights[planetGravity]

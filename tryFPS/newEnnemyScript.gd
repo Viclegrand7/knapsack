@@ -6,6 +6,8 @@ var timeSinceLastRepair = 0
 const MAX_HEALTH = 100
 var health = MAX_HEALTH
 
+var isAlive = true
+
 var target = null
 var needToFight = false
 
@@ -23,19 +25,33 @@ const TIME_BETWEEN_ATTACKS = 1.5
 var timeBeforeAttack = 0
 
 var cannonManager = preload("res://Bullet_Scene.tscn")
-onready var muzzle = $Turrets
+onready var muzzle = $ship2_alive/Turrets
+
+onready var aliveShape = $CollisionShape
+onready var deadShape1 = $CollisionShapeDestroyed
+onready var deadShape2 = $CollisionShapeDestroyedRear
+
+func _ready():
+	deadShape1.disabled = true
+	deadShape2.disabled = true
+	aliveShape.disabled = false
 
 func bullet_hit(damage, bulletGlobalTransform):
-	health -= damage
-	needToFight = true
-	set_alert_state()
-# warning-ignore:return_value_discarded
-	move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
-	if health < 0 :
-		print("Ok I'm dead, stop it")
+	if isAlive:
+		health -= damage
+		needToFight = true
+		set_alert_state()
+		move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
+		if health < 0 :
+			isAlive = false
+			$ship2_alive.hide()
+			$ship2_destroyed.show()
+			aliveShape.disabled = true
+			deadShape1.disabled = false
+			deadShape2.disabled = false
 
 func _process(delta):
-	if needToFight and target:
+	if needToFight and target and isAlive:
 		set_alert_state()
 		timeSinceLastRepair += delta
 		if timeSinceLastRepair > TIME_BETWEEN_REPAIRS:
@@ -103,7 +119,7 @@ func _on_Area_body_exited(body):
 		target = null
 
 func set_alert_state():
-	$Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 0, 0))
+	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 0, 0))
 
 func set_normal_state():
-	$Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 1, 1))
+	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 1, 1))

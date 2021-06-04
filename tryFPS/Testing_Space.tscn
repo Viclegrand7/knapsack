@@ -23,9 +23,9 @@ __meta__ = {
 }
 
 [node name="EnnemyShip" parent="." instance=ExtResource( 1 )]
-transform = Transform( 0.171416, 0.06603, 0.982984, -0.0113434, 0.997818, -0.0650483, -0.985133, -2.70084e-08, 0.171791, 3.7801, 0.442828, -0.115174 )
+transform = Transform( 0.171416, 0.06603, 0.982984, -0.0113434, 0.997818, -0.0650483, -0.985133, -2.70084e-08, 0.171791, 12.093, 0.442828, -0.115174 )
 
 [node name="Player" parent="." groups=[
 "Player",
 ] instance=ExtResource( 2 )]
-transform = Transform( 0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -20.0086, 0, 0 )
+transform = Transform( 0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, -14.4567, 0, 0 )

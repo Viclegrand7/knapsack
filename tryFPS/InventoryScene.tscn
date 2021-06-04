@@ -2,7 +2,7 @@
 
 [ext_resource path="res://ItemPrecision.gd" type="Script" id=1]
 [ext_resource path="res://InventoryManager.gd" type="Script" id=2]
-[ext_resource path="res://PlayerInventory.gd" type="Script" id=3]
+[ext_resource path="res://Inventory.gd" type="Script" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.329412, 0.152941, 0, 1 )
@@ -60,7 +60,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlayerInventoryScroller" type="ScrollContainer" parent="PlayerInventory"]
+[node name="InventoryScroller" type="ScrollContainer" parent="PlayerInventory"]
 anchor_top = 0.093
 anchor_right = 1.0
 anchor_bottom = 0.933
@@ -72,7 +72,13 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ItemSlot" type="GridContainer" parent="PlayerInventory/PlayerInventoryScroller"]
+[node name="ItemSlot" type="GridContainer" parent="PlayerInventory/InventoryScroller"]
+margin_right = 246.0
+margin_bottom = 378.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/vseparation = 5
+custom_constants/hseparation = 5
 columns = 3
 
 [node name="Weight" type="Panel" parent="PlayerInventory"]
@@ -81,6 +87,17 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 margin_top = 0.149994
 margin_right = -7.62939e-06
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="PlayerInventory/Weight"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = 1.90735e-06
+text = "0"
+align = 1
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -97,6 +114,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Label" type="Label" parent="PlayerInventory/Value"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = 1.90735e-06
+text = "0"
+align = 1
+valign = 1
+
 [node name="PlanetInventory" type="Panel" parent="."]
 anchor_left = 0.658
 anchor_top = 0.1
@@ -106,6 +131,7 @@ margin_left = 0.208008
 margin_top = 3.8147e-06
 margin_right = 0.35199
 margin_bottom = 3.05176e-05
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -133,7 +159,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlanetStockScroller" type="ScrollContainer" parent="PlanetInventory"]
+[node name="InventoryScroller" type="ScrollContainer" parent="PlanetInventory"]
 anchor_top = 0.093
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -144,17 +170,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ItemSlot" type="GridContainer" parent="PlanetInventory/PlanetStockScroller"]
+[node name="ItemSlot" type="GridContainer" parent="PlanetInventory/InventoryScroller"]
+size_flags_horizontal = 0
+size_flags_vertical = 0
 columns = 3
 
 [node name="ItemPrecision" type="Panel" parent="."]
-anchor_left = 0.391
+anchor_left = 0.361
 anchor_top = 0.6
-anchor_right = 0.609
+anchor_right = 0.639
 anchor_bottom = 0.85
-margin_left = -0.384003
+margin_left = 0.335999
 margin_top = 3.05176e-05
-margin_right = 0.384033
+margin_right = -0.33606
+margin_bottom = 3.05176e-05
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -176,14 +205,14 @@ __meta__ = {
 
 [node name="ItemName" type="Label" parent="ItemPrecision/CategoryName"]
 anchor_left = 0.005
-anchor_right = 1.005
+anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -0.1
-margin_right = -0.100006
+margin_left = -1.3946
 custom_colors/font_color = Color( 0.913725, 0.94902, 0.286275, 1 )
 text = "Item Description"
 align = 1
 valign = 1
+uppercase = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -192,9 +221,12 @@ __meta__ = {
 anchor_top = 0.28
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_top = 1.14441e-05
-margin_right = -1.52588e-05
-margin_bottom = 4.57764e-05
+margin_left = 2.0
+margin_top = 2.0
+margin_right = -2.0
+margin_bottom = -2.0
+align = 1
+autowrap = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

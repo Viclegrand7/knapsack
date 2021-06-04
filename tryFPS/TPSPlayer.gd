@@ -239,8 +239,7 @@ func process_movement(delta):
 	else:
 		target *= MAX_SPEED
 
-	var accel
-	accel = (SPRINT_ACCELERATION if isSprinting else ACCEL) if dir.dot(vel) > 0 else DEACCEL
+	var accel = (SPRINT_ACCELERATION if isSprinting else ACCEL) if dir.dot(vel) > 0 else DEACCEL
 
 	vel = vel.linear_interpolate(target, accel * delta)
 	for reactor in reactors:

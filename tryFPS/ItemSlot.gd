@@ -12,7 +12,7 @@ func _init():
 	set('custom_styles/panel', style);
 
 func pickItem():
-	item.pickItem();
+#	item.pickItem();
 	remove_child(item);
 	get_tree().get_root().add_child(item);
 	item = null;
@@ -20,12 +20,15 @@ func pickItem():
 
 func putItem(newItem):
 	item = newItem;
-	item.putItem();
+#	item.putItem();
 	get_tree().get_root().remove_child(item);
 	add_child(item);
+	item.rect_position = Vector2(0, 0)
 	refreshColors();
 
 func refreshColors():
-	if not item:
+#	if not item:
 		style.bg_color = Color("#8B7258");
 		style.border_color = Color("#534434");
+#	else:
+
