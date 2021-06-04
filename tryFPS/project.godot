@@ -8,9 +8,14 @@
 
 config_version=4
 
-_global_script_classes=[  ]
+_global_script_classes=[ {
+"base": "Resource",
+"class": "GenericItem",
+"language": "GDScript",
+"path": "res://Item.gd"
+} ]
 _global_script_class_icons={
-
+"GenericItem": ""
 }
 
 [application]
@@ -18,6 +23,10 @@ _global_script_class_icons={
 config/name="Try Fps"
 run/main_scene="res://Testing_Space.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+GameManager="res://Item.gd"
 
 [input]
 
@@ -109,6 +118,11 @@ KEY_3={
 KEY_5={
 "deadzone": 0.5,
 "events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":40,"unicode":0,"echo":false,"script":null)
+ ]
+}
+secondaryAction={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":2,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 
