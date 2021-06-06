@@ -15,7 +15,7 @@ func _init(name, description, values, weights, texturePath):
 	itemValues = values
 	itemWeights = weights
 	texture = load(texturePath)
-	var maxFactor = max(float(75) / texture.get_height(), float(75) / texture.get_width())
+	var maxFactor = max(float(148) / texture.get_height(), float(148) / texture.get_width())
 	rect_scale = Vector2(maxFactor, maxFactor)
 
 func setWeightValue(planetGravity):

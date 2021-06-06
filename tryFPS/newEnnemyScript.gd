@@ -31,13 +31,12 @@ onready var aliveShape = $CollisionShape
 onready var deadShape1 = $CollisionShapeDestroyed
 onready var deadShape2 = $CollisionShapeDestroyedRear
 
-onready var lootingText = get_parent().get_child(5)
+onready var inventoryManager = get_node("../Inventory")
 
 func _ready():
 	deadShape1.disabled = true
 	deadShape2.disabled = true
 	aliveShape.disabled = false
-	lootingText.hide()
 
 func bullet_hit(damage, bulletGlobalTransform):
 	if isAlive:
@@ -53,6 +52,7 @@ func bullet_hit(damage, bulletGlobalTransform):
 			aliveShape.disabled = true
 			deadShape1.disabled = false
 			deadShape2.disabled = false
+			inventoryManager.createLootingInventory()
 
 func _process(delta):
 	if needToFight and target and isAlive:
@@ -83,7 +83,6 @@ func autoRepair():
 		needToFight = false
 
 func move_towards_ennemy(delta):
-	print(delta)
 	var distance = global_transform.origin.distance_to(target.global_transform.origin)
 	if distance > NORMAL_SHOOTING_RANGE:
 		var direction = global_transform.origin.direction_to(target.global_transform.origin)
@@ -127,12 +126,17 @@ func _on_Area_body_exited(body):
 func _on_Area2_body_entered(body):
 	if not isAlive:
 		if body.is_in_group("Player"):
-			lootingText.show()
+			body.showLootingText()
+			body.canLoot = true
 
 func _on_Area2_body_exited(body):
-	if not isAlive:
-		if body.is_in_group("Player"):
-			lootingText.hide()
+	if body.is_in_group("Player"):
+		body.canLoot = false
+		if not isAlive:
+			body.hideLootingText()
+			body.hideLootingScene()
+			body.isMouseCaptured = true
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func set_alert_state():
 	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 0, 0))

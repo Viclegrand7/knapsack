@@ -72,21 +72,21 @@ func addWeightValue(item):
 	if not isPlanet:
 		var currentWeight = int(weightLabel.get_text())
 		currentWeight += item.giveWeight()
-		weightLabel.set_text(str(currentWeight))
+		weightLabel.set_text("Weight: " + str(currentWeight))
 
 		var currentValue = int(valueLabel.get_text())
 		currentValue += item.giveValue()
-		valueLabel.set_text(str(currentValue))
+		valueLabel.set_text("Value: " + str(currentValue))
 
 func subWeightValue(item):
 	if not isPlanet:
 		var currentWeight = int(weightLabel.get_text())
 		currentWeight -= item.giveWeight()
-		weightLabel.set_text(str(currentWeight))
+		weightLabel.set_text("Weight: " + str(currentWeight))
 
 		var currentValue = int(valueLabel.get_text())
 		currentValue -= item.giveValue()
-		valueLabel.set_text(str(currentValue))
+		valueLabel.set_text("Value: " + str(currentValue))
 
 func getFreeSlot():
 	for slot in slotList:

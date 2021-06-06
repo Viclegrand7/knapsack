@@ -42,6 +42,12 @@ var laserMuzzles = []
 
 var soundManager = preload("res://Simple_Audio_Player.tscn")
 
+var canLoot = false
+onready var lootingScene = get_node("../Inventory")
+onready var lootingText = get_node("../LootingText")
+
+var isMouseCaptured = true
+
 #Weapon management
 #var animation_manager
 #
@@ -155,44 +161,39 @@ func process_input(_delta):
 	# Capturing/Freeing the cursor
 	if Input.is_action_just_pressed("ui_cancel"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			if isMouseCaptured:
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		else:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	#Weapon management
-	# ----------------------------------
-	#Changing weapons
-#	var weapon_change_number = WEAPON_NAME_TO_NUMBER[current_weapon_name]
-#
-#	if Input.is_action_pressed("KEY_5"): #5
-#		weapon_change_number = 0
-#	if Input.is_action_pressed("KEY_1"): #1
-#		weapon_change_number = 1
-#	if Input.is_action_pressed("KEY_2"): #2
-#		weapon_change_number = 2
-#	if Input.is_action_pressed("KEY_3"): #3
-#		weapon_change_number = 3
-#
-#	if Input.is_action_just_pressed("next_weapon"):
-#		weapon_change_number += 1
-#	if Input.is_action_just_pressed("previous_weapon"):
-#		weapon_change_number -= 1
-#
-#	weapon_change_number = (weapon_change_number + WEAPON_NUMBER_TO_NAME.size()) % WEAPON_NUMBER_TO_NAME.size()
-#
-#	if not changing_weapon:
-#		if WEAPON_NUMBER_TO_NAME[weapon_change_number] != current_weapon_name:
-#			changing_weapon_name = WEAPON_NUMBER_TO_NAME[weapon_change_number]
-#			changing_weapon = true
-#
 	# ----------------------------------
 	#Firing the weapons
-	if Input.is_action_pressed("fire"):
+	if Input.is_action_pressed("fire") and isMouseCaptured:
 		laser()
 			
-	if Input.is_action_just_pressed("secondaryAction"):
+	if Input.is_action_just_pressed("secondaryAction") and isMouseCaptured:
 		missile()
-	#End of weapon management
+
+	# ----------------------------------
+	#Looting corpses
+	if canLoot:
+		if Input.is_action_pressed("Interact"):
+			hideLootingText()
+			showLootingScene()
+			isMouseCaptured = false
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func hideLootingText():
+	lootingText.hide()
+
+func showLootingText():
+	lootingText.show()
+
+func hideLootingScene():
+	lootingScene.hide()
+
+func showLootingScene():
+	lootingScene.show()
 
 func laser():
 	if not timeBeforeAttack:

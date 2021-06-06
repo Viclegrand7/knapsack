@@ -70,8 +70,29 @@ func createPlanetInventory():
 		vendorInventory.append(vendorPossibilitiesInventory[position])
 		vendorPossibilitiesInventory.remove(position)
 	
-	var planetGravity = randi() % 3
+	var planetGravity = 0
 	
+	for i in vendorInventory:
+		i.setWeightValue(planetGravity)
+		var newSlot = getPlanetFreeSlot()
+		newSlot.item = i
+		newSlot.add_child(i)
+		newSlot.refreshColors()
+
+func createLootingInventory():
+	vendorPossibilitiesInventory = fullItemList
+	if playerInventory.size():
+		for i in playerInventory:
+			i.setWeightValue(0)
+			vendorPossibilitiesInventory.erase(i)
+
+	while vendorInventory.size() < difficultyKnapsack and vendorPossibilitiesInventory.size() > 0:
+		var position = randi() % vendorPossibilitiesInventory.size()
+		vendorInventory.append(vendorPossibilitiesInventory[position])
+		vendorPossibilitiesInventory.remove(position)
+
+	var planetGravity = 0
+
 	for i in vendorInventory:
 		i.setWeightValue(planetGravity)
 		var newSlot = getPlanetFreeSlot()

@@ -35,6 +35,24 @@ __meta__ = {
 "_edit_use_anchors_": true
 }
 
+[node name="InventoryScroller" type="ScrollContainer" parent="PlayerInventory"]
+anchor_top = 0.093
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 0.149994
+margin_right = -4.00006
+margin_bottom = -6.10352e-05
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ItemSlot" type="GridContainer" parent="PlayerInventory/InventoryScroller"]
+margin_right = 464.624
+margin_bottom = 734.52
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 3
+
 [node name="CategoryName" type="Panel" parent="PlayerInventory"]
 anchor_left = 0.008
 anchor_top = 0.004
@@ -60,28 +78,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="InventoryScroller" type="ScrollContainer" parent="PlayerInventory"]
-anchor_top = 0.093
-anchor_right = 1.0
-anchor_bottom = 0.933
-margin_left = 2.0
-margin_top = 0.150002
-margin_right = -2.00002
-margin_bottom = 0.149994
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ItemSlot" type="GridContainer" parent="PlayerInventory/InventoryScroller"]
-margin_right = 246.0
-margin_bottom = 378.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-custom_constants/vseparation = 5
-custom_constants/hseparation = 5
-columns = 3
-
-[node name="Weight" type="Panel" parent="PlayerInventory"]
+[node name="Value" type="Panel" parent="PlayerInventory"]
 anchor_top = 0.933
 anchor_right = 0.5
 anchor_bottom = 1.0
@@ -91,18 +88,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="PlayerInventory/Weight"]
+[node name="Label" type="Label" parent="PlayerInventory/Value"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_bottom = 1.90735e-06
-text = "0"
+text = "Value: 0"
 align = 1
 valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Value" type="Panel" parent="PlayerInventory"]
+[node name="Weight" type="Panel" parent="PlayerInventory"]
 anchor_left = 0.5
 anchor_top = 0.933
 anchor_right = 1.0
@@ -114,11 +111,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="PlayerInventory/Value"]
+[node name="Label" type="Label" parent="PlayerInventory/Weight"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_bottom = 1.90735e-06
-text = "0"
+text = "Weight: 0"
 align = 1
 valign = 1
 __meta__ = {
@@ -174,6 +171,8 @@ __meta__ = {
 }
 
 [node name="ItemSlot" type="GridContainer" parent="PlanetInventory/InventoryScroller"]
+anchor_right = 0.95
+anchor_bottom = 1.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 columns = 3

@@ -34,11 +34,8 @@ transform = Transform( 0.0857081, 0.033015, 0.491492, -0.0056717, 0.498909, -0.0
 ] instance=ExtResource( 2 )]
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -14.4567, 0, 0 )
 
-[node name="CSGSphere" type="CSGSphere" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 23.2466, 0, 223.904 )
-radius = 20.0
-
 [node name="Inventory" parent="." instance=ExtResource( 3 )]
 visible = false
 
 [node name="LootingText" parent="." instance=ExtResource( 5 )]
+visible = false

@@ -5,7 +5,7 @@ var style
 
 func _init():
 	mouse_filter = Control.MOUSE_FILTER_PASS;
-	rect_min_size = Vector2(75, 75);
+	rect_min_size = Vector2(148, 148);
 	style = StyleBoxFlat.new();
 	refreshColors();
 	style.set_border_width_all(2);
