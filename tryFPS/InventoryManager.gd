@@ -109,3 +109,4 @@ func getPlayerFreeSlot():
 func swapItemWeightValue(item, comesFromPlanet):
 # warning-ignore:standalone_ternary
 	playerInventoryManager.addWeightValue(item) if comesFromPlanet else playerInventoryManager.subWeightValue(item)
+
