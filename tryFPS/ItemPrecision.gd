@@ -4,6 +4,7 @@ onready var description = $ItemDescription
 onready var itemName = $CategoryName/ItemName
 
 func toggleDisplay():
+# warning-ignore:standalone_ternary
 	hide() if is_visible_in_tree() else show()
 
 func displayItem(item):

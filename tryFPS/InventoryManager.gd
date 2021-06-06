@@ -30,7 +30,7 @@ onready var toolTip = $ItemPrecision
 onready var planetInventoryManager = $PlanetInventory
 onready var playerInventoryManager = $PlayerInventory
 
-signal planetInventoryInitialized #When the planet's inventory has been set up
+#signal planetInventoryInitialized #When the planet's inventory has been set up
 
 func _ready():
 	playerInventory = []
@@ -86,4 +86,5 @@ func getPlayerFreeSlot():
 	return playerInventoryManager.getFreeSlot()
 
 func swapItemWeightValue(item, comesFromPlanet):
+# warning-ignore:standalone_ternary
 	playerInventoryManager.addWeightValue(item) if comesFromPlanet else playerInventoryManager.subWeightValue(item)

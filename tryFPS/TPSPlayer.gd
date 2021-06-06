@@ -205,6 +205,7 @@ func laser():
 		laserFromRight = 1 - laserFromRight
 		newShot.BULLET_DAMAGE = 2
 		timeBeforeAttack = TIME_BETWEEN_ATTACKS
+		newShot.initiator = "Player"
 		playSound("laser3")
 
 func missile():
@@ -215,6 +216,7 @@ func missile():
 		scene_root.add_child(newShot)
 		newShot.global_transform.origin = cannonMuzzles[0].global_transform.origin
 		newShot.direction = cannonMuzzles[0].global_transform.basis.x
+		newShot.initiator = "Player"
 		timeBeforeMissileLeft = TIME_BETWEEN_MISSILES
 		playSound("cannon")
 	elif not timeBeforeMissileRight:
@@ -224,6 +226,7 @@ func missile():
 		scene_root.add_child(newShot)
 		newShot.global_transform.origin = cannonMuzzles[1].global_transform.origin
 		newShot.direction = cannonMuzzles[1].global_transform.basis.x
+		newShot.initiator = "Player"
 		timeBeforeMissileRight = TIME_BETWEEN_MISSILES
 		playSound("cannon")
 
@@ -239,12 +242,15 @@ func process_movement(delta):
 	else:
 		target *= MAX_SPEED
 
+# warning-ignore:incompatible_ternary
 	var accel = (SPRINT_ACCELERATION if isSprinting else ACCEL) if dir.dot(vel) > 0 else DEACCEL
 
 	vel = vel.linear_interpolate(target, accel * delta)
 	for reactor in reactors:
+# warning-ignore:incompatible_ternary
 		reactor.scale = Vector3(1, 8 * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)), 1)
 
+# warning-ignore:incompatible_ternary
 	camera.global_translate(camera.global_transform.basis.z * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)))
 
 #	vel.x = hvel.x

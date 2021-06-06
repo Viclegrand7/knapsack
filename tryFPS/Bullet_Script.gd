@@ -8,10 +8,12 @@ const KILL_TIMER = 4
 var timer = 0
 
 var direction
+var initiator
 
 var hit_something = false
 
 func _ready():
+# warning-ignore:return_value_discarded
 	$Area.connect("body_entered", self, "collided")
 
 func _physics_process(delta):
@@ -25,6 +27,8 @@ func _physics_process(delta):
 		queue_free()
 
 func collided(body):
+	if body.is_in_group(initiator):
+		return
 	if hit_something == false:
 		if body.has_method("bullet_hit"):
 			body.bullet_hit(BULLET_DAMAGE, global_transform)

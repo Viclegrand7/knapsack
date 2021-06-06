@@ -31,16 +31,20 @@ onready var aliveShape = $CollisionShape
 onready var deadShape1 = $CollisionShapeDestroyed
 onready var deadShape2 = $CollisionShapeDestroyedRear
 
+onready var lootingText = get_parent().get_child(5)
+
 func _ready():
 	deadShape1.disabled = true
 	deadShape2.disabled = true
 	aliveShape.disabled = false
+	lootingText.hide()
 
 func bullet_hit(damage, bulletGlobalTransform):
 	if isAlive:
 		health -= damage
 		needToFight = true
 		set_alert_state()
+# warning-ignore:return_value_discarded
 		move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
 		if health < 0 :
 			isAlive = false
@@ -69,6 +73,7 @@ func attack(delta):
 		scene_root.add_child(newShot)
 		newShot.global_transform.origin = muzzle.global_transform.origin
 		newShot.direction = muzzle.global_transform.origin.direction_to(target.global_transform.origin)
+		newShot.initiator = "Ennemies"
 		timeBeforeAttack = TIME_BETWEEN_ATTACKS
 
 func autoRepair():
@@ -78,6 +83,7 @@ func autoRepair():
 		needToFight = false
 
 func move_towards_ennemy(delta):
+	print(delta)
 	var distance = global_transform.origin.distance_to(target.global_transform.origin)
 	if distance > NORMAL_SHOOTING_RANGE:
 		var direction = global_transform.origin.direction_to(target.global_transform.origin)
@@ -117,6 +123,16 @@ func _on_Area_body_entered(body):
 func _on_Area_body_exited(body):
 	if body.is_in_group("Player"):
 		target = null
+
+func _on_Area2_body_entered(body):
+	if not isAlive:
+		if body.is_in_group("Player"):
+			lootingText.show()
+
+func _on_Area2_body_exited(body):
+	if not isAlive:
+		if body.is_in_group("Player"):
+			lootingText.hide()
 
 func set_alert_state():
 	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 0, 0))

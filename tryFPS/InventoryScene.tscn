@@ -121,6 +121,9 @@ margin_bottom = 1.90735e-06
 text = "0"
 align = 1
 valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="PlanetInventory" type="Panel" parent="."]
 anchor_left = 0.658
