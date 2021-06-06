@@ -4,6 +4,7 @@ onready var takeoff = $takeoff
 onready var landing = $landing
 onready var bgBlurred = $bg_blurred
 onready var player = $fade_bg
+onready var inventory = $Inv
 
 func _ready():
 	takeoff.visible = false
@@ -16,3 +17,4 @@ func _on_landing_finished():
 	player.play("fade_in")
 	yield(player, "animation_finished")
 	landing.visible = false
+	inventory.show()

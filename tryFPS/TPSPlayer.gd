@@ -35,8 +35,8 @@ var timeBeforeMissileLeft = 0
 var timeBeforeMissileRight = 0
 
 var flashlight
-
-var cannonManager = preload("res://Bullet_Scene.tscn")
+var laserManager = preload("res://assets/spaceship/small_laser.tscn")
+var cannonManager = preload("res://assets/spaceship/large_laser.tscn")
 var cannonMuzzles = []
 var laserMuzzles = []
 
@@ -198,10 +198,11 @@ func showLootingScene():
 func laser():
 	if not timeBeforeAttack:
 		var scene_root = get_tree().root.get_children()[0]
-		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
+		var newShot = laserManager.instance()
 		scene_root.add_child(newShot)
-		newShot.global_transform.origin = laserMuzzles[laserFromRight].global_transform.origin
+#		newShot.global_transform.origin = laserMuzzles[laserFromRight].global_transform.origin
+		newShot.global_transform = laserMuzzles[laserFromRight].global_transform
+		newShot.scale = Vector3(1,1,1)
 		newShot.direction = 2 * laserMuzzles[laserFromRight].global_transform.basis.x
 		laserFromRight = 1 - laserFromRight
 		newShot.BULLET_DAMAGE = 2
@@ -213,9 +214,10 @@ func missile():
 	if not timeBeforeMissileLeft:
 		var scene_root = get_tree().root.get_children()[0]
 		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
 		scene_root.add_child(newShot)
-		newShot.global_transform.origin = cannonMuzzles[0].global_transform.origin
+#		newShot.global_transform.origin = cannonMuzzles[0].global_transform.origin
+		newShot.global_transform = cannonMuzzles[0].global_transform
+		newShot.scale = Vector3(1,1,1)
 		newShot.direction = cannonMuzzles[0].global_transform.basis.x
 		newShot.initiator = "Player"
 		timeBeforeMissileLeft = TIME_BETWEEN_MISSILES
@@ -223,9 +225,10 @@ func missile():
 	elif not timeBeforeMissileRight:
 		var scene_root = get_tree().root.get_children()[0]
 		var newShot = cannonManager.instance()
-#		newShot.scale = Vector3(3, 3, 3)
 		scene_root.add_child(newShot)
-		newShot.global_transform.origin = cannonMuzzles[1].global_transform.origin
+#		newShot.global_transform.origin = cannonMuzzles[1].global_transform.origin
+		newShot.global_transform = cannonMuzzles[1].global_transform
+		newShot.scale = Vector3(1,1,1)
 		newShot.direction = cannonMuzzles[1].global_transform.basis.x
 		newShot.initiator = "Player"
 		timeBeforeMissileRight = TIME_BETWEEN_MISSILES
@@ -249,7 +252,7 @@ func process_movement(delta):
 	vel = vel.linear_interpolate(target, accel * delta)
 	for reactor in reactors:
 # warning-ignore:incompatible_ternary
-		reactor.scale = Vector3(1, 8 * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)), 1)
+		reactor.scale = Vector3(0.5, 8 * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)), 0.5)
 
 # warning-ignore:incompatible_ternary
 	camera.global_translate(camera.global_transform.basis.z * vel.length() / (target.length() if target.length() else (MAX_SPRINTSPEED if isSprinting else MAX_SPEED)))

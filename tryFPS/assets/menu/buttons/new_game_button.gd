@@ -5,5 +5,5 @@ func _ready():
 
 func _on_Button_button_up():
 	print("changing scene...")
-	#get_tree().change_scene("res://Testing_Space.tscn")
-	get_tree().change_scene("res://TradingScene.tscn")
+	get_tree().change_scene("res://Testing_Space.tscn")
+	#get_tree().change_scene("res://TradingScene.tscn")
