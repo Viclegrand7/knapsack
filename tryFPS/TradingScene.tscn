@@ -3,7 +3,7 @@
 [ext_resource path="res://assets/trading/cinematics/spaceship_takeoff0201-0400.ogv" type="VideoStream" id=1]
 [ext_resource path="res://TradingScene.gd" type="Script" id=2]
 [ext_resource path="res://assets/trading/cinematics/spaceship_landing0000-0199.ogv" type="VideoStream" id=3]
-[ext_resource path="res://assets/trading/backgrounds/trading_blurred.png" type="Texture" id=4]
+[ext_resource path="res://assets/trading/backgrounds/landing0200_blurred.png" type="Texture" id=4]
 
 [sub_resource type="Animation" id=1]
 resource_name = "fade_in"
@@ -37,6 +37,7 @@ __meta__ = {
 }
 
 [node name="landing" type="VideoPlayer" parent="."]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_right = 1920.0
@@ -47,6 +48,7 @@ __meta__ = {
 }
 
 [node name="bg_blurred" type="Sprite" parent="."]
+visible = false
 texture = ExtResource( 4 )
 centered = false
 
