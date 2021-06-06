@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/menu/buttons/load_game_unavailable.png" type="Texture" id=1]
+[ext_resource path="res://assets/menu/buttons/load_game.png" type="Texture" id=2]
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 1 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="StyleBoxTexture" id=2]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[node name="Button" type="Button"]
+margin_right = 1200.0
+margin_bottom = 240.0
+custom_styles/disabled = SubResource( 1 )
+custom_styles/normal = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

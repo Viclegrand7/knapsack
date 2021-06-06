@@ -1,0 +1,152 @@
+[gd_scene load_steps=22 format=2]
+
+[ext_resource path="res://assets/menu/backgrounds/bg.png" type="Texture" id=1]
+[ext_resource path="res://assets/menu/buttons/new_game_button.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/menu/logo/space_raiders_logo.png" type="Texture" id=3]
+[ext_resource path="res://assets/menu/buttons/load_game_button.tscn" type="PackedScene" id=4]
+[ext_resource path="res://assets/menu/buttons/options_button.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/menu/backgrounds/bg_blurred.png" type="Texture" id=6]
+[ext_resource path="res://StartMenuScene.gd" type="Script" id=7]
+[ext_resource path="res://assets/menu/buttons/new_game_hover.png" type="Texture" id=8]
+[ext_resource path="res://assets/menu/buttons/load_game_hover.png" type="Texture" id=9]
+[ext_resource path="res://assets/menu/buttons/load_game_pressed.png" type="Texture" id=10]
+[ext_resource path="res://assets/menu/buttons/options_pressed.png" type="Texture" id=11]
+[ext_resource path="res://assets/menu/buttons/options_hover.png" type="Texture" id=12]
+[ext_resource path="res://assets/menu/buttons/credits_button.tscn" type="PackedScene" id=13]
+[ext_resource path="res://assets/menu/buttons/quit_button.tscn" type="PackedScene" id=14]
+[ext_resource path="res://assets/menu/buttons/connecting.png" type="Texture" id=15]
+
+[sub_resource type="StyleBoxTexture" id=2]
+texture = ExtResource( 8 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="StyleBoxTexture" id=3]
+texture = ExtResource( 9 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="StyleBoxTexture" id=4]
+texture = ExtResource( 10 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="StyleBoxTexture" id=5]
+texture = ExtResource( 12 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="StyleBoxTexture" id=6]
+texture = ExtResource( 11 )
+region_rect = Rect2( 0, 0, 1200, 240 )
+
+[sub_resource type="Animation" id=1]
+resource_name = "Fade out"
+length = 4.0
+tracks/0/type = "bezier"
+tracks/0/path = NodePath("bg_blurred:modulate:a")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"points": PoolRealArray( 1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0 ),
+"times": PoolRealArray( 0, 1, 4 )
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("bg_blurred:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 1, 4 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 1,
+"values": [ true, true, false ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("connection:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ true, false ]
+}
+
+[node name="NodeMainMenu" type="Node2D"]
+script = ExtResource( 7 )
+
+[node name="background" type="Sprite" parent="."]
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 1 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="logo" type="Sprite" parent="."]
+position = Vector2( 960, 100 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 3 )
+
+[node name="main_new_game" parent="." instance=ExtResource( 2 )]
+margin_left = 660.0
+margin_top = 250.0
+margin_right = 1860.0
+margin_bottom = 490.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_styles/hover = SubResource( 2 )
+icon = null
+
+[node name="main_load_game" parent="." instance=ExtResource( 4 )]
+margin_left = 660.0
+margin_top = 410.0
+margin_right = 1860.0
+margin_bottom = 650.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_styles/hover = SubResource( 3 )
+custom_styles/pressed = SubResource( 4 )
+disabled = true
+
+[node name="main_options" parent="." instance=ExtResource( 5 )]
+margin_left = 660.0
+margin_top = 570.0
+margin_right = 1860.0
+margin_bottom = 810.0
+rect_scale = Vector2( 0.5, 0.5 )
+custom_styles/hover = SubResource( 5 )
+custom_styles/pressed = SubResource( 6 )
+align = 0
+
+[node name="main_credits_button" parent="." instance=ExtResource( 13 )]
+margin_left = 660.0
+margin_top = 730.0
+margin_right = 1860.0
+margin_bottom = 970.0
+rect_scale = Vector2( 0.5, 0.5 )
+
+[node name="main_quit_button" parent="." instance=ExtResource( 14 )]
+margin_left = 660.0
+margin_top = 890.0
+margin_right = 1860.0
+margin_bottom = 1130.0
+rect_scale = Vector2( 0.5, 0.5 )
+
+[node name="bg_blurred" type="Sprite" parent="."]
+position = Vector2( 2.37842, 0 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 6 )
+centered = false
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="connection" type="Sprite" parent="."]
+visible = false
+position = Vector2( 960, 540 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 15 )
+
+[node name="fadeOut" type="AnimationPlayer" parent="."]
+"anims/Fade out" = SubResource( 1 )
