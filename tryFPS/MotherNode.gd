@@ -4,7 +4,7 @@ var serverAddress = "localhost"
 var network
 var mplayer
 
-var spaceLists = ["Testing_Space", "Testing_Space_2", "Testing_Space_3", "Testing_Space_4", "EndScene"]
+var spaceLists = ["Testing_Space", "Testing_Space_2", "Testing_Space_3", "Testing_Space_4", "NodeMainMenu"]
 var counter = 0
 
 var connectionSuccess = false

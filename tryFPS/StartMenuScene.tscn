@@ -149,3 +149,14 @@ texture = ExtResource( 15 )
 
 [node name="fadeOut" type="AnimationPlayer" parent="."]
 "anims/Fade out" = SubResource( 6 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = 800.0
+margin_top = 540.0
+margin_right = 1200.0
+margin_bottom = 640.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}

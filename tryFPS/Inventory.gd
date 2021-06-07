@@ -15,7 +15,7 @@ var valueLabel = null #only for player
 var itemOffset = Vector2(-1, -1)
 
 # contrôle du bouton
-onready var doneButton = $DoneButton
+onready var doneButton = get_node("../DoneButton")
 
 # on envoie un signal si le poids est dépassé ou non
 signal imFull
@@ -84,7 +84,8 @@ func addWeightValue(item):
 		currentValue += item.giveValue()
 		valueLabel.set_text("Value: " + str(currentValue))
 		
-		doneButton.disabled = true
+		if currentWeight >= 150:
+			doneButton.disabled = true
 		
 func subWeightValue(item):
 	if not isPlanet:
@@ -96,7 +97,8 @@ func subWeightValue(item):
 		currentValue -= item.giveValue()
 		valueLabel.set_text("Value: " + str(currentValue))
 		
-		doneButton.disabled = false
+		if currentWeight < 150:
+			doneButton.disabled = false
 
 func getFreeSlot():
 	for slot in slotList:

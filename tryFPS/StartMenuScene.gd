@@ -14,16 +14,21 @@ onready var mainO =  $main_options
 onready var mainC =  $main_credits_button
 onready var mainQ =  $main_quit_button
 
+
 var isGamePresent = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	if get_node("/root/MotherNode").counter > 4:
+		end_game()
+		return
 	# boutons désactivés tant que l'on n'est pas connecté
 	disable_hide_main_buttons()
 	player.play("Fade out")
 	# rendre les boutons cliquables quand animation finie
 	yield(player, "animation_finished")
 	activate_main_buttons()
+
 
 func _button_pressed():
 	print("Привет, мир! (hello world - kosmojet version)")
@@ -55,3 +60,7 @@ func activate_main_buttons():
 	# check si la blockchain existe et est remplie
 	if isGamePresent:
 		mainLG.disabled = false
+
+func end_game():
+	disable_hide_main_buttons()
+	$label.set_text("Your Score : %d\nComputer Score : %d" %[get_node("/root/MotherNode/Inventory").playerScore, get_node("/root/MotherNode/Inventory").computerScore])
