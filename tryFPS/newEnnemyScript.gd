@@ -31,7 +31,7 @@ onready var aliveShape = $CollisionShape
 onready var deadShape1 = $CollisionShapeDestroyed
 onready var deadShape2 = $CollisionShapeDestroyedRear
 
-onready var inventoryManager = get_node("../Inventory")
+onready var inventoryManager = get_node("/root/MotherNode/Inventory")
 
 func _ready():
 	deadShape1.disabled = true

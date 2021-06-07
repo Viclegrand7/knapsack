@@ -1,6 +1,8 @@
 extends Control
 #class_name GameManager
 
+signal onButtonPressed
+
 const ressourcePath = "res://assets/items/"
 const fileName = "statistics"
 
@@ -109,3 +111,6 @@ func getPlayerFreeSlot():
 func swapItemWeightValue(item, comesFromPlanet):
 # warning-ignore:standalone_ternary
 	playerInventoryManager.addWeightValue(item) if comesFromPlanet else playerInventoryManager.subWeightValue(item)
+
+func _on_DoneButton_pressed():
+	emit_signal("onButtonPressed")
