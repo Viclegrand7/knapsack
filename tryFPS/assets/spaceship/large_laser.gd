@@ -1,10 +1,8 @@
 extends Spatial
 
-var BULLET_SPEED = 300
+var BULLET_SPEED = 400
 var BULLET_DAMAGE = 15
 var BULLET_ROTATION = 2
-
-onready var laser = $"Small Projectiles"
 
 const KILL_TIMER = 4
 var timer = 0

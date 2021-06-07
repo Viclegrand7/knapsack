@@ -14,6 +14,8 @@ const minRange = 20
 const ORTHONORMALIZING = 5
 var timeSinceLastOrtho : float = 0
 
+var looted = false
+
 var target
 var Thrustle
 

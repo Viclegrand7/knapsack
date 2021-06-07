@@ -38,6 +38,5 @@ material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 3 )
-
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
 [connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]

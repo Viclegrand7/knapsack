@@ -57,15 +57,17 @@ func _ready():
 		fullItemList.append(GenericItem.new(i, itemStatisticsDictionary[i][2], itemStatisticsDictionary[i][0], itemStatisticsDictionary[i][1], ressourcePath + itemStatisticsDictionary[i][3]))
 #										name, 		description, 				values, 							weights, 						texturePath):
 	randomize()
-	createPlanetInventory()
 
 func createPlanetInventory():
-	vendorPossibilitiesInventory = fullItemList
+	vendorPossibilitiesInventory = fullItemList.duplicate()
 	if playerInventory.size():
 		for i in playerInventory:
 			playerScore += i.giveValue()
 			playerInventory.erase(i)
 			vendorPossibilitiesInventory.erase(i)
+
+	vendorInventory = []
+
 
 	while vendorInventory.size() < difficultyKnapsack and vendorPossibilitiesInventory.size() > 0:
 		var position = randi() % vendorPossibilitiesInventory.size()
@@ -82,11 +84,14 @@ func createPlanetInventory():
 		newSlot.refreshColors()
 
 func createLootingInventory():
-	vendorPossibilitiesInventory = fullItemList
+	vendorPossibilitiesInventory = fullItemList.duplicate()
 	if playerInventory.size():
 		for i in playerInventory:
 			i.setWeightValue(0)
 			vendorPossibilitiesInventory.erase(i)
+			print(vendorPossibilitiesInventory)
+
+	vendorInventory = []
 
 	while vendorInventory.size() < difficultyKnapsack and vendorPossibilitiesInventory.size() > 0:
 		var position = randi() % vendorPossibilitiesInventory.size()
@@ -113,4 +118,7 @@ func swapItemWeightValue(item, comesFromPlanet):
 	playerInventoryManager.addWeightValue(item) if comesFromPlanet else playerInventoryManager.subWeightValue(item)
 
 func _on_DoneButton_pressed():
+	for slot in playerInventoryManager.slotList:
+		if slot.item:
+			playerInventory.append(slot.item)
 	emit_signal("onButtonPressed")

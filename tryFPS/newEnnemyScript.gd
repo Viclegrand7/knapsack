@@ -31,18 +31,28 @@ onready var aliveShape = $CollisionShape
 onready var deadShape1 = $CollisionShapeDestroyed
 onready var deadShape2 = $CollisionShapeDestroyedRear
 
-onready var inventoryManager = get_node("/root/MotherNode/Inventory")
+onready var inventory = get_node("/root/MotherNode/Inventory")
+
+signal timeForWar
+signal timeForPeace
+
+var looted
 
 func _ready():
 	deadShape1.disabled = true
 	deadShape2.disabled = true
 	aliveShape.disabled = false
+# warning-ignore:return_value_discarded
+	connect("timeForWar", self, "set_alert_state")
+# warning-ignore:return_value_discarded
+	connect("timeForPeace", self, "set_normal_state")
+	looted = false
 
 func bullet_hit(damage, bulletGlobalTransform):
 	if isAlive:
 		health -= damage
-		needToFight = true
 		set_alert_state()
+		emit_signal("timeForWar")
 # warning-ignore:return_value_discarded
 		move_and_slide(bulletGlobalTransform.basis.z, Vector3(0, 1, 0), false, 4, 0.75398, false)
 		if health < 0 :
@@ -52,7 +62,6 @@ func bullet_hit(damage, bulletGlobalTransform):
 			aliveShape.disabled = true
 			deadShape1.disabled = false
 			deadShape2.disabled = false
-			inventoryManager.createLootingInventory()
 
 func _process(delta):
 	if needToFight and target and isAlive:
@@ -73,14 +82,14 @@ func attack(delta):
 		scene_root.add_child(newShot)
 		newShot.global_transform.origin = muzzle.global_transform.origin
 		newShot.direction = muzzle.global_transform.origin.direction_to(target.global_transform.origin)
-		newShot.initiator = "Ennemies"
+		newShot.initiator = self
 		timeBeforeAttack = TIME_BETWEEN_ATTACKS
 
 func autoRepair():
 	health = clamp(health + 10, 0, MAX_HEALTH)
 	if health == MAX_HEALTH:
 		set_normal_state()
-		needToFight = false
+		emit_signal("timeForPeace")
 
 func move_towards_ennemy(delta):
 	var distance = global_transform.origin.distance_to(target.global_transform.origin)
@@ -127,19 +136,24 @@ func _on_Area2_body_entered(body):
 	if not isAlive:
 		if body.is_in_group("Player"):
 			body.showLootingText()
-			body.canLoot = true
+			if not looted:
+				body.canLoot = self
 
 func _on_Area2_body_exited(body):
 	if body.is_in_group("Player"):
-		body.canLoot = false
 		if not isAlive:
-			body.hideLootingText()
-			body.hideLootingScene()
-			body.isMouseCaptured = true
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+			if body.canLoot == self:
+				body.canLoot = null
+				body.hideLootingText()
+				body.hideLootingScene()
+				inventory._on_DoneButton_pressed()
+				body.isMouseCaptured = true
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func set_alert_state():
+	needToFight = true
 	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 0, 0))
 
 func set_normal_state():
+	needToFight = false
 	$ship2_alive/Cube011_Cube017.get_surface_material(3).set_albedo(Color(1, 1, 1))

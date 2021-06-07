@@ -42,7 +42,7 @@ var laserMuzzles = []
 
 var soundManager = preload("res://Simple_Audio_Player.tscn")
 
-var canLoot = false
+var canLoot = null
 var canTrade = false
 
 onready var root = get_node("/root/MotherNode/")
@@ -181,14 +181,17 @@ func process_input(_delta):
 
 	# ----------------------------------
 	#Looting corpses
-	if canLoot:
-		if Input.is_action_pressed("Interact"):
+	if Input.is_action_pressed("Interact"):
+		if canLoot:
+			if not canLoot.looted:
+				canLoot.looted = true
+				lootingScene.createLootingInventory()
+
 			hideLootingText()
 			showLootingScene()
 			isMouseCaptured = false
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	elif canTrade:
-		if Input.is_action_pressed("Interact"):
+		elif canTrade:
 			hideLootingText()
 			
 			# Remove the current level
@@ -220,6 +223,7 @@ func showLootingScene():
 func _on_DoneButton_pressed():
 	hideLootingScene()
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	isMouseCaptured = true
 
 func laser():
 	if not timeBeforeAttack:
