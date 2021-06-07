@@ -1,4 +1,24 @@
-extends KinematicBody
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://assets/spaceship/crosshair.png" type="Texture" id=1]
+[ext_resource path="res://174550599_925620861594430_401748151133299725_n.png" type="Texture" id=2]
+[ext_resource path="res://LootingText.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Kosmojet_3U.tscn" type="PackedScene" id=4]
+[ext_resource path="res://ship2_modif.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/planets/planet_b.tscn" type="PackedScene" id=6]
+
+[sub_resource type="PanoramaSky" id=1]
+panorama = ExtResource( 2 )
+
+[sub_resource type="Environment" id=2]
+background_mode = 2
+background_sky = SubResource( 1 )
+ambient_light_energy = 4.75
+fog_color = Color( 0.270588, 0.290196, 0.309804, 1 )
+fog_sun_color = Color( 1, 0.901961, 0.701961, 1 )
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends KinematicBody
 
 export var ACCEL : float = 2
 export var MAX_SPEED : float = 30
@@ -35,32 +55,32 @@ var timeBeforeMissileLeft = 0
 var timeBeforeMissileRight = 0
 
 var flashlight
-var laserManager = preload("res://assets/spaceship/small_laser.tscn")
-var cannonManager = preload("res://assets/spaceship/large_laser.tscn")
+var laserManager = preload(\"res://assets/spaceship/small_laser.tscn\")
+var cannonManager = preload(\"res://assets/spaceship/large_laser.tscn\")
 var cannonMuzzles = []
 var laserMuzzles = []
 
-var soundManager = preload("res://Simple_Audio_Player.tscn")
+var soundManager = preload(\"res://Simple_Audio_Player.tscn\")
 
 var canLoot = false
 var canTrade = false
 
-onready var root = get_node("/root/MotherNode/")
+onready var root = get_node(\"/root/MotherNode/\")
 
-onready var lootingScene = get_node("/root/MotherNode/Inventory")
-onready var lootingText = get_node("../LootingText")
+onready var lootingScene = get_node(\"/root/MotherNode/Inventory\")
+onready var lootingText = get_node(\"../LootingText\")
 
 var isMouseCaptured = true
 
 #Weapon management
 #var animation_manager
 #
-#var current_weapon_name = "UNARMED"
-#var weapons = {"UNARMED": null, "KNIFE": null, "RIFLE": null, "PISTOL": null}
-#const WEAPON_NUMBER_TO_NAME = {0:"UNARMED", 1: "RIFLE", 2: "PISTOL", 3: "KNIFE"}
-#const WEAPON_NAME_TO_NUMBER = {"UNARMED": 0, "RIFLE": 1, "PISTOL": 2, "KNIFE": 3}
+#var current_weapon_name = \"UNARMED\"
+#var weapons = {\"UNARMED\": null, \"KNIFE\": null, \"RIFLE\": null, \"PISTOL\": null}
+#const WEAPON_NUMBER_TO_NAME = {0:\"UNARMED\", 1: \"RIFLE\", 2: \"PISTOL\", 3: \"KNIFE\"}
+#const WEAPON_NAME_TO_NUMBER = {\"UNARMED\": 0, \"RIFLE\": 1, \"PISTOL\": 2, \"KNIFE\": 3}
 #var changing_weapon = false
-#var changing_weapon_name = "UNARMED"
+#var changing_weapon_name = \"UNARMED\"
 
 var health = 100
 
@@ -69,7 +89,7 @@ var UI_status_label
 
 func _ready():
 	isMouseCaptured = true
-	lootingScene.connect("onButtonPressed", self, "_on_DoneButton_pressed")
+	lootingScene.connect(\"onButtonPressed\", self, \"_on_DoneButton_pressed\")
 #	camera = $Rotation_Helper/Camera
 #	rotation_helper = $CameraPivot
 	flashlight = [$yCameraPivot/FlashLight1, $yCameraPivot/FlashLight2]
@@ -79,11 +99,11 @@ func _ready():
 	
 	#Weapon management
 #	animation_manager = $Rotation_Helper/Model/Animation_Player
-#	animation_manager.callback_function = funcref(self, "fire_bullet")
+#	animation_manager.callback_function = funcref(self, \"fire_bullet\")
 #
-#	weapons["KNIFE"]  = $Rotation_Helper/Gun_Fire_Points/Knife_Point
-#	weapons["PISTOL"] = $Rotation_Helper/Gun_Fire_Points/Pistol_Point
-#	weapons["RIFLE"]  = $Rotation_Helper/Gun_Fire_Points/Rifle_Point
+#	weapons[\"KNIFE\"]  = $Rotation_Helper/Gun_Fire_Points/Knife_Point
+#	weapons[\"PISTOL\"] = $Rotation_Helper/Gun_Fire_Points/Pistol_Point
+#	weapons[\"RIFLE\"]  = $Rotation_Helper/Gun_Fire_Points/Rifle_Point
 #
 #	var gun_aim_point_pos = $Rotation_Helper/Gun_Aim_Point.global_transform.origin
 #
@@ -94,8 +114,8 @@ func _ready():
 #			weapon_node.look_at(gun_aim_point_pos, Vector3(0, 1, 0))
 #			weapon_node.rotate_object_local(Vector3(0, 1, 0), deg2rad(180)) #So it shoots towards positive Y axis
 #
-#	current_weapon_name  = "UNARMED"
-#	changing_weapon_name = "UNARMED"
+#	current_weapon_name  = \"UNARMED\"
+#	changing_weapon_name = \"UNARMED\"
 #
 	#UI_status_label = $HUD/Panel/Gun_label
 	#End of weapon management
@@ -137,13 +157,13 @@ func process_input(_delta):
 
 	var input_movement_vector = Vector2()
 
-	if Input.is_action_pressed("movement_forward"):
+	if Input.is_action_pressed(\"movement_forward\"):
 		input_movement_vector.y += 1
-	if Input.is_action_pressed("movement_backward"):
+	if Input.is_action_pressed(\"movement_backward\"):
 		input_movement_vector.y -= 1
-	if Input.is_action_pressed("movement_left"):
+	if Input.is_action_pressed(\"movement_left\"):
 		input_movement_vector.x -= 1
-	if Input.is_action_pressed("movement_right"):
+	if Input.is_action_pressed(\"movement_right\"):
 		input_movement_vector.x += 1
 #Press T to switch between local and world space when selecting a Spatial node
 	input_movement_vector = input_movement_vector.normalized()
@@ -153,19 +173,19 @@ func process_input(_delta):
 	dir += cam_xform.basis.x * input_movement_vector.x
 	# ----------------------------------
 	# Sprinting
-	if Input.is_action_pressed("movement_sprint"):
+	if Input.is_action_pressed(\"movement_sprint\"):
 		isSprinting = true
 	else:
 		isSprinting = false
 
 	# ----------------------------------
 	# Flashlight toggle on/off
-	if Input.is_action_just_pressed("flashlight_toggle"):
+	if Input.is_action_just_pressed(\"flashlight_toggle\"):
 		toggleFlashlight()
 
 	# ----------------------------------
 	# Capturing/Freeing the cursor
-	if Input.is_action_just_pressed("ui_cancel"):
+	if Input.is_action_just_pressed(\"ui_cancel\"):
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_VISIBLE:
 			if isMouseCaptured:
 				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -173,31 +193,31 @@ func process_input(_delta):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	# ----------------------------------
 	#Firing the weapons
-	if Input.is_action_pressed("fire") and isMouseCaptured:
+	if Input.is_action_pressed(\"fire\") and isMouseCaptured:
 		laser()
 			
-	if Input.is_action_just_pressed("secondaryAction") and isMouseCaptured:
+	if Input.is_action_just_pressed(\"secondaryAction\") and isMouseCaptured:
 		missile()
 
 	# ----------------------------------
 	#Looting corpses
 	if canLoot:
-		if Input.is_action_pressed("Interact"):
+		if Input.is_action_pressed(\"Interact\"):
 			hideLootingText()
 			showLootingScene()
 			isMouseCaptured = false
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	elif canTrade:
-		if Input.is_action_pressed("Interact"):
+		if Input.is_action_pressed(\"Interact\"):
 			hideLootingText()
 			
 			# Remove the current level
-			var level = root.get_node("Testing_Space")
+			var level = root.get_node(\"Testing_Space_2\")
 			root.remove_child(level)
-			level.call_deferred("free")
+			level.call_deferred(\"free\")
 			# Add the next level
-			var next_level_resource = load("res://Testing_Space_2.tscn")
-			#var next_level_resource = load("res://Testing_Space.tscn")
+			var next_level_resource = load(\"res://Testing_Space_2.tscn\")
+			#var next_level_resource = load(\"res://Testing_Space.tscn\")
 			var next_level = next_level_resource.instance()
 			root.add_child(next_level)
 			root.move_child(next_level, 0)
@@ -233,8 +253,8 @@ func laser():
 		laserFromRight = 1 - laserFromRight
 		newShot.BULLET_DAMAGE = 2
 		timeBeforeAttack = TIME_BETWEEN_ATTACKS
-		newShot.initiator = "Player"
-		playSound("laser3")
+		newShot.initiator = \"Player\"
+		playSound(\"laser3\")
 
 func missile():
 	if not timeBeforeMissileLeft:
@@ -245,9 +265,9 @@ func missile():
 		newShot.global_transform = cannonMuzzles[0].global_transform
 		newShot.scale = Vector3(1,1,1)
 		newShot.direction = cannonMuzzles[0].global_transform.basis.x
-		newShot.initiator = "Player"
+		newShot.initiator = \"Player\"
 		timeBeforeMissileLeft = TIME_BETWEEN_MISSILES
-		playSound("cannon")
+		playSound(\"cannon\")
 	elif not timeBeforeMissileRight:
 		var scene_root = get_tree().root.get_children()[0]
 		var newShot = cannonManager.instance()
@@ -256,9 +276,9 @@ func missile():
 		newShot.global_transform = cannonMuzzles[1].global_transform
 		newShot.scale = Vector3(1,1,1)
 		newShot.direction = cannonMuzzles[1].global_transform.basis.x
-		newShot.initiator = "Player"
+		newShot.initiator = \"Player\"
 		timeBeforeMissileRight = TIME_BETWEEN_MISSILES
-		playSound("cannon")
+		playSound(\"cannon\")
 
 func process_movement(delta):
 #	dir.y = 0
@@ -309,7 +329,7 @@ func process_movement(delta):
 #			if weaponEquipped:
 #				changing_weapon = false
 #				current_weapon_name = changing_weapon_name
-#				changing_weapon_name = ""
+#				changing_weapon_name = \"\"
 #
 #func fire_bullet():
 #	if changing_weapon:
@@ -319,13 +339,13 @@ func process_movement(delta):
 
 func _input(event):
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-#		print("beforex = " , self.camera.translation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
+#		print(\"beforex = \" , self.camera.translation.x  , \"    y = \" , self.camera.translation.y  , \"    z = \", self.camera.translation.z)
 		rotation_helper.rotate_z(- deg2rad(event.relative.y * MOUSE_SENSITIVITY))
 		var camera_rot = rotation_helper.rotation_degrees
 		if camera_rot.z > 90 || camera_rot.z < -90:
-#			print("blobjf")
+#			print(\"blobjf\")
 			self.rotate_y(deg2rad(+ event.relative.x * MOUSE_SENSITIVITY))
-#			print("      x = " , self.camera.translation.x  , "    y = " , self.camera.translation.y  , "    z = ", self.camera.translation.z)
+#			print(\"      x = \" , self.camera.translation.x  , \"    y = \" , self.camera.translation.y  , \"    z = \", self.camera.translation.z)
 		else:
 			self.rotate_y(deg2rad(- event.relative.x * MOUSE_SENSITIVITY))
 
@@ -334,7 +354,7 @@ func bullet_hit(damage, _bullet_transform):
 	doesShake = true
 	timeShaking = 0
 	if health < 0:
-		print("FUUUUUUUKKKKKCCCCCC")
+		print(\"FUUUUUUUKKKKKCCCCCC\")
 
 func playSound(name):
 	var audioClone = soundManager.instance()
@@ -349,3 +369,39 @@ func toggleFlashlight():
 	else:
 		flashlight[0].show()
 		flashlight[1].show()
+"
+
+[node name="Testing_Space_2" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
+__meta__ = {
+"_editor_description_": "Tryin'a make space"
+}
+
+[node name="EnnemyShip" parent="." groups=[
+"Ennemies",
+] instance=ExtResource( 5 )]
+transform = Transform( -0.0398203, 0.0319722, 0.497386, -0.0056717, 0.498909, -0.0325242, -0.49838, -0.00823228, -0.0393707, 30.2119, 0.442828, -8.41559 )
+
+[node name="EnnemyShip2" parent="." groups=[
+"Ennemies",
+] instance=ExtResource( 5 )]
+transform = Transform( -0.158238, 0.0290629, 0.473409, -0.0056717, 0.498909, -0.0325242, -0.474267, -0.0156632, -0.157563, 30.2119, 0.442828, -30.9021 )
+
+[node name="Player" parent="." groups=[
+"Player",
+] instance=ExtResource( 4 )]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -14.4567, 0, 0 )
+script = SubResource( 3 )
+
+[node name="LootingText" parent="." instance=ExtResource( 3 )]
+visible = false
+
+[node name="Crosshair" type="Sprite" parent="."]
+position = Vector2( 960, 450 )
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 1 )
+
+[node name="planet_b" parent="." instance=ExtResource( 6 )]
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 376.873, 15.9634, 31.5983 )

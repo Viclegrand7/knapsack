@@ -233,9 +233,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" parent="." instance=ExtResource( 4 )]
+[node name="DoneButton" parent="." instance=ExtResource( 4 )]
 margin_left = 720.0
 margin_top = 950.0
 margin_right = 1920.0
 margin_bottom = 1190.0
 rect_scale = Vector2( 0.4, 0.4 )
+
+[connection signal="pressed" from="DoneButton" to="." method="_on_DoneButton_pressed"]

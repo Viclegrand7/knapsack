@@ -165,6 +165,7 @@ shape = SubResource( 8 )
 [node name="CollisionShapeDestroyedRear" type="CollisionShape" parent="."]
 transform = Transform( 0.216449, 0.973179, 0.0779265, 0.338738, -5.51874e-08, -0.940881, -0.915645, 0.23005, -0.329652, 0, 0, 0 )
 shape = SubResource( 9 )
+
 [connection signal="body_entered" from="Area" to="." method="_on_Area_body_entered"]
 [connection signal="body_exited" from="Area" to="." method="_on_Area_body_exited"]
 [connection signal="body_entered" from="Area2" to="." method="_on_Area2_body_entered"]

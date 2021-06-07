@@ -2,10 +2,10 @@
 
 [ext_resource path="res://ship2_modif.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Kosmojet_3U.tscn" type="PackedScene" id=2]
-[ext_resource path="res://InventoryScene.tscn" type="PackedScene" id=3]
 [ext_resource path="res://174550599_925620861594430_401748151133299725_n.png" type="Texture" id=4]
 [ext_resource path="res://LootingText.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/spaceship/crosshair.png" type="Texture" id=6]
+[ext_resource path="res://assets/planets/planet_a.tscn" type="PackedScene" id=7]
 
 [sub_resource type="PanoramaSky" id=1]
 panorama = ExtResource( 4 )
@@ -35,9 +35,6 @@ transform = Transform( 0.0857081, 0.033015, 0.491492, -0.0056717, 0.498909, -0.0
 ] instance=ExtResource( 2 )]
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -14.4567, 0, 0 )
 
-[node name="Inventory" parent="." instance=ExtResource( 3 )]
-visible = false
-
 [node name="LootingText" parent="." instance=ExtResource( 5 )]
 visible = false
 
@@ -45,3 +42,6 @@ visible = false
 position = Vector2( 960, 450 )
 scale = Vector2( 0.4, 0.4 )
 texture = ExtResource( 6 )
+
+[node name="planet_a" parent="." instance=ExtResource( 7 )]
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 263.362, 0, -325.672 )

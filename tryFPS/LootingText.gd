@@ -10,7 +10,7 @@ extends Label
 func _ready():
 	for action in InputMap.get_action_list("Interact"):
 		if action is InputEventKey:
-			set_text("Press %s to loot" % OS.get_scancode_string(action.scancode))
+			set_text("Press %s to interact" % OS.get_scancode_string(action.scancode))
 			return
 
 
