@@ -58,8 +58,8 @@ int knapsack :: fitness(std :: vector <bool> item) {
 	auto itemIterator(item.begin());
 	for (auto weightIterator(att_weight.begin()), profitIterator(att_profits.begin()) ; itemIterator != item.end() ; ++weightIterator, ++profitIterator)
 		if (*itemIterator++) {
-			sum_w += weightIterator;
-			sum_p += profitIterator;
+			sum_w += *weightIterator;
+			sum_p += *profitIterator;
 		}
 	return sum_w > att_C ? -1 : sum_p;
 }

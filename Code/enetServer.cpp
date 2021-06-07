@@ -1,5 +1,7 @@
 #include "enetServer.h"
 #include "blockchain.hh"
+#include <pthread.h>
+#include <sstream>
 
 ENetAddress address;
 ENetHost *server;
@@ -20,12 +22,14 @@ int maxWeight = 150;
 int computerScore(0);
 int playerScore(0);
 
-char *saveFileName("savefile.sav");
+const char *saveFileName("savefile.sav");
+
+pthread_mutex_t knapsackMutex;
+pthread_mutex_t blockchainMutex;
 
 int num;
 
-void sendBroadcast(char *mess)
-{
+void sendBroadcast(char *mess) {
 	char buffer[500];
 
 	//for (int i=0;i<12;i++)
@@ -46,104 +50,106 @@ void sendBroadcast(char *mess)
 	enet_host_broadcast (server, 1, packet);
 }
 
-void sendTousConnectes()
-{
+void sendTousConnectes() {
 	char mess[10];
 
 	sprintf(mess,"X");
 	sendBroadcast(mess);
 }
 
-void sendEstDejaConnecte(int d)
-{
+void sendEstDejaConnecte(int d) {
 	printf("%d est déjà connecte\n",d);
 }
 
-void sendCommandeIllegale()
-{
-}
-
-void sendMap(char *m)
-{
-	char mess[500];
-
-	sprintf(mess,"M%s",m);
-	sendBroadcast(mess);
-}
-
-void sendBomb(int j,int y,int x)
-{
-	char mess[20];
-
-	sprintf(mess,"B%d%3.3d%3.3d",j,y,x);
-	sendBroadcast(mess);
-}
-
-void sendFlag(int j,int v,int y,int x)
-{
-	char mess[20];
-
-	sprintf(mess,"F%d%d%3.3d%3.3d",j,v,y,x);
-	sendBroadcast(mess);
-}
-
-void sendDiscovered(int j,int v,int y,int x)
-{
-	char mess[20];
-
-	sprintf(mess,"D%d%d%3.3d%3.3d",j,v,y,x);
-	sendBroadcast(mess);
-}
-
-void sendStop()
-{
-	char mess[20];
-
-	sprintf(mess,"S");
-	sendBroadcast(mess);
-}
 
 
+void *handleKnapsack(void *values) {
+	std :: vector <std :: string> **datas = (std :: vector <std :: string> **) values;
+	std :: vector <std :: string> *knapsackValues = datas[0];
+	std :: vector <std :: string> *blockchainValues = datas[1];
 
-void handleKnapsack(void *values) {
-	char *allValues = (char *) values;
-	stringstream myStream(allValues);
-	std :: getline(myStream, numberOfItems, ',');
-	myStream >> numberOfItems;
-	std :: vector <int> weights;
-	std :: vector <int> values;
-	
+	char trashComa;
 	int temporaryInteger;
-	for (int i = 0 ; i < numberOfItems ; ++i) {
-		std :: getline(myStream, temporaryInteger, ',');
-		weights.push_back(temporaryInteger);
-	}
-	for (int i = 0 ; i < numberOfItems ; ++i) {
-		std :: getline(myStream, temporaryInteger, ',');
-		values.push_back(temporaryInteger);
-	}
 
-	knapsack myKnapsack(weights, values, maxWeight, 100, 100);
-	population bestPop = myKnapsack.run();
 
-	char *message[100];
-	message[0] = 'C'; //Computer
-	for (unsigned int i = 0 ; i < bestPop.parent.size() ; ++i)
-		sprintf(message + 1 + i, "%d", bestPop.parent[i]);
-	sprintf(message + 90, "%d", bestPop.fitness);
-	sendBroadcast(message);
-	myChain.addBlock(message);
+	while (1) {
+		if (!knapsackValues->empty()) {
+			pthread_mutex_lock(&knapsackMutex);
+			std :: stringstream myStream(knapsackValues->front());
+			knapsackValues->erase(knapsackValues->begin());
+			pthread_mutex_unlock(&knapsackMutex);
+			int numberOfItems;
+			std :: vector <int> weights;
+			std :: vector <int> values;
+			myStream >> numberOfItems >> trashComa;
+			for (int i = 0 ; i < numberOfItems ; ++i) {
+				myStream >> temporaryInteger >> trashComa;
+				weights.push_back(temporaryInteger);
+			}
+			for (int i = 0 ; i < numberOfItems ; ++i) {
+				myStream >> temporaryInteger >> trashComa;
+				values.push_back(temporaryInteger);
+			}
+
+			knapsack myKnapsack(weights, values, maxWeight, 100, 100);
+			population bestPop = myKnapsack.run();
+
+			std :: string message("C");
+			for (unsigned int i = 0 ; i < bestPop.parent.size() ; ++i)
+				message += std :: to_string(bestPop.parent[i]) + ",";
+			message += std :: to_string(bestPop.fitness) + "\0";
+
+			char charMessage[100];
+			memcpy(charMessage, ("C" + std :: to_string(bestPop.fitness)).c_str(), 100);
+			sendBroadcast(charMessage);
+
+			pthread_mutex_lock(&blockchainMutex);
+			blockchainValues->push_back(message);
+			pthread_mutex_unlock(&blockchainMutex);
+		}
+	}
+	return NULL;
 }
 
-void addBlock(void *values) {
-	char *data = (char *) values;
-	myChain.addBlock(data);
+void *handleBlockchain(void *values) {
+	std :: vector <std :: string> **datas = (std :: vector <std :: string> **) values;
+	std :: vector <std :: string> *knapsackValues = datas[0];
+	std :: vector <std :: string> *blockchainValues = datas[1];
+
+
+	blockchain myChain(saveFileName);
+	if (!myChain.isEmpty()) { //Backing up
+		int currentLevel = myChain.currentLevel();
+		int scores[2];
+		myChain.currentScores(scores);
+		char message[100];
+		sprintf(message, "R%d,%d,%d", currentLevel, scores[0], scores[1]); //Recover
+		sendBroadcast(message);
+	}
+
+	while (1)
+		if (!blockchainValues->empty()) {
+			pthread_mutex_lock(&blockchainMutex);
+			std :: string data(blockchainValues->front());
+			blockchainValues->erase(blockchainValues->begin());
+			pthread_mutex_unlock(&blockchainMutex);
+
+			myChain.addBlock(data);
+		}
+
+	myChain.saveChain(saveFileName);
+	return NULL;
 }
 
-void handleIncomingMessage()
-{
-	switch recMess[0] {
+void handleIncomingMessage(void *values) {
+	std :: vector <std :: string> *datas = (std :: vector <std :: string> *) values;
+	std :: vector <std :: string> *knapsackValues = datas;
+	std :: vector <std :: string> *blockchainValues = datas + 1;
+
+	std :: cout << "Received " << recMess << std :: endl;
+	switch (recMess[0]) {
 		case 'C':
+		{
 			int dir = recMess[1] - '0';
 			if (!estConnecte[dir]) {
 				++nbConnectes;
@@ -155,13 +161,13 @@ void handleIncomingMessage()
 
 			// Tout le monde est connecté, on envoie plein de choses
 			// aux interfaces graphiques.
-			if (nbConnectes == 1) {
+			if (nbConnectes == 1)
 				sendTousConnectes();
+		}
 
-				fsm=1;
-			}
-	break;
-		case 'L': //Loot. AI cannot access this event
+		break;
+	case 'L': //Loot. AI cannot access this event
+	{
 /*		char numberOfItems(recMess[1]);
 		int *allValues = malloc((2 * numberOfItems + 1) * sizeof(int));
 		allValues[0] = (int) numberOfItems;
@@ -174,10 +180,12 @@ void handleIncomingMessage()
 		if (threadError)
 			std :: cout << "Error while creating thread: " << threadError << std :: endl;
 		pthread_join(knapsackThread, NULL);
-*/	break;
-		case 'P': //Planet
-
+*/
+	}	
+		break;
+	case 'P': //Planet
 		//Need to redo it, send char * directly;
+	{
 
 /*		char numberOfItems(recMess[1]);
 		std :: vector <int> weights;
@@ -191,26 +199,35 @@ void handleIncomingMessage()
 		if (threadError)
 			std :: cout << "Error while creating thread: " << threadError << std :: endl;
 		pthread_join(knapsackThread, NULL);
-*/	break;
-		case 'S': //Score
+*/
+	}
+		break;
+	case 'S': //Score
+	{
 		pthread_t blockchainThread;
 		recMess[0] = 'P'; //Player
 		playerScore = std :: atoi(recMess + 1);
-		int threadError(pthread_create(&blockchainThread, NULL, addBlock, (void *) recMess));
-		if (threadError)
-			std :: cout << "Error while creating thread: " << threadError << std :: endl;
-		pthread_join(blockchainThread, NULL);	
-	break;
-		default:
-	break;
+
+		pthread_mutex_lock(&blockchainMutex);
+		blockchainValues->push_back(recMess + 1);
+		pthread_mutex_unlock(&blockchainMutex);
+
+		break;
+	}
+	default:
+		break;
 	}
 }
 
-int main (int argc, char ** argv) 
-{
+int main (int argc, char ** argv) {
+	if (pthread_mutex_init(&knapsackMutex, NULL))
+		perror("mutex_lock");
+	if (pthread_mutex_init(&blockchainMutex, NULL))
+		perror("mutex_lock");
+
 	printf("enet_initialize()\n");
 
-	if (enet_initialize () != 0) {
+	if (enet_initialize()) {
 		fprintf (stderr, "An error occurred while initializing ENet.\n");
 		return EXIT_FAILURE;
     }
@@ -220,28 +237,40 @@ int main (int argc, char ** argv)
 	address.port = 4242;
 	printf("enet_host_create()\n");
 
-	server = enet_host_create (& address, 32, 2, 0, 0);
-	if (server == NULL) {
-		fprintf (stderr, "An error occurred while trying to create an ENet server host.\n");
-		exit (EXIT_FAILURE);
+	server = enet_host_create(&address, 32, 2, 0, 0);
+	if (!server) {
+		fprintf(stderr, "An error occurred while trying to create an ENet server host.\n");
+		exit(EXIT_FAILURE);
 	}
 
+	std :: vector <std :: string> knapsackValues;
+	std :: vector <std :: string> blockchainValues;
+	std :: vector <std :: string> *datas[2] = {&knapsackValues, &blockchainValues};
 
-	fsm=0;
+	pthread_t knapsackThread;
+	int threadError(pthread_create(&knapsackThread, NULL, handleKnapsack, (void *) datas));
+	if (threadError)
+		std :: cout << "Error while creating thread: " << threadError << std :: endl;
+
+	pthread_t blockchainThread;
+	threadError = pthread_create(&blockchainThread, NULL, handleBlockchain, (void *) datas);
+	if (threadError)
+		std :: cout << "Error while creating thread: " << threadError << std :: endl;
+
+
 
 	printf("before while() mainloop\n");
 
-/*   	while (1)
-   	{
-*/		while (enet_host_service (server, &event, TOMAX) > 0)
-		{
-   			switch (event.type) {
-      			case ENET_EVENT_TYPE_CONNECT:
-         				printf ("A new client connected from %x:%u.\n", 
+   	while (1) {
+		while (enet_host_service (server, &event, TOMAX) > 0) {
+			std :: cout << "Alive" << std :: endl;
+			switch (event.type) {
+	  			case ENET_EVENT_TYPE_CONNECT:
+	     				printf ("A new client connected from %x:%u.\n", 
 				event.peer -> address.host, event.peer -> address.port);
 			break;
-      			case ENET_EVENT_TYPE_RECEIVE:
-         				//printf ("A packet of length %u containing %s was received from %s on channel %u.\n", 
+	  			case ENET_EVENT_TYPE_RECEIVE:
+	     				//printf ("A packet of length %u containing %s was received from %s on channel %u.\n", 
 				//	(int)event.packet -> dataLength, 
 				//	(char*)event.packet -> data, 
 				//	(char*)event.peer -> data, (int)event.channelID);
@@ -254,18 +283,20 @@ int main (int argc, char ** argv)
 				}
 				recMess[idx++]='\0';
 				printf("recMess=|%s|\n",recMess);
- 				enet_packet_destroy (event.packet);
+					enet_packet_destroy (event.packet);
 
-				handleIncomingMessage();
+				handleIncomingMessage((void *) datas);
 			break;
 
-      			case ENET_EVENT_TYPE_DISCONNECT:
+	  			case ENET_EVENT_TYPE_DISCONNECT:
 					printf ("%s disconnected FPX.\n", (char*)event.peer -> data);
 					event.peer -> data = NULL;
 			break;
-   			}
+			}
 		}
-/*	}
-*/
-	atexit (enet_deinitialize);
+	}
+
+	pthread_join(knapsackThread, NULL);
+	pthread_join(blockchainThread, NULL);
+	atexit(enet_deinitialize);
 }

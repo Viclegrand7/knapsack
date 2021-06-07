@@ -9,9 +9,7 @@ struct population {
 	population(int f, std :: vector <int> p) : fitness(f), parent(p) {}
 };
 
-bool customOrderingPopulation(population leftHandSign, population rightHandSign) {
-	return leftHandSign.fitness < rightHandSign.fitness;
-}
+bool customOrderingPopulation(population leftHandSign, population rightHandSign);
 
 class knapsack {
 	int att_C;
@@ -31,7 +29,7 @@ public:
 	population run();
 
 	knapsack(std :: vector <int> weights, std :: vector <int> profits, int C, int population, int maxIter) : att_C(C), att_weight(weights), att_profits(profits), att_population(population), att_iterated(maxIter) {
-		std :: srand(std :: time(NULL));
+		std :: srand(time(NULL));
 		while (att_weight.size() < att_profits.size())
 			att_profits.pop_back();
 		while (att_weight.size() > att_profits.size())

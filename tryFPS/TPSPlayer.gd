@@ -182,6 +182,7 @@ func process_input(_delta):
 	# ----------------------------------
 	#Looting corpses
 	if Input.is_action_pressed("Interact"):
+		get_node("/root/MotherNode").sendToServer("S300")
 		if canLoot:
 			if not canLoot.looted:
 				canLoot.looted = true

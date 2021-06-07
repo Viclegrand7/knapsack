@@ -19,6 +19,11 @@ std :: string block :: getFullData() {
     return std :: string (att_currentHash + " " + std :: to_string(att_nonce) + " " + att_data + "\n");
 }
 
+int block :: giveScore() {
+    std :: size_t lastComaPosition(att_data.find_last_of(','));
+    return std :: stoi(att_data.substr(lastComaPosition + 1));
+}
+
 
 
 blockchain :: blockchain(std :: string fileName) {
@@ -131,4 +136,33 @@ void blockchain :: printChain() {
         currentHead = currentHead->getNextBlock();
     }
     std :: cout << currentHead->getFullData();
+}
+
+int  blockchain :: currentLevel() {
+    if (!att_head)
+        return 0;
+    int currentLevel(0);
+    block *currentBlock(att_head);
+    while (currentBlock) {
+        if (currentBlock->isPlayer())
+            ++currentLevel;
+        currentBlock = currentBlock->getNextBlock();
+    }
+    return currentLevel;
+}
+
+void blockchain :: currentScores(int *scores) {
+    int playerScore(0);
+    int AIScore(0);
+    block *currentBlock(att_head);
+    while (currentBlock) {
+        if (currentBlock->isPlayer())
+            playerScore = currentBlock->giveScore();
+        else
+            AIScore = currentBlock->giveScore();
+        currentBlock = currentBlock->getNextBlock();
+    }
+    scores[0] = playerScore;
+    scores[1] = AIScore;
+    return;
 }

@@ -66,6 +66,7 @@ func createPlanetInventory():
 			playerInventory.erase(i)
 			vendorPossibilitiesInventory.erase(i)
 
+	get_node("/tree/MotherNode").sendToServer(str(playerScore))
 	vendorInventory = []
 
 
@@ -122,3 +123,4 @@ func _on_DoneButton_pressed():
 		if slot.item:
 			playerInventory.append(slot.item)
 	emit_signal("onButtonPressed")
+	

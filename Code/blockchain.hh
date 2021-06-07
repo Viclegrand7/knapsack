@@ -18,6 +18,8 @@ public:
 	std :: string getHash() {return att_currentHash;};
 	block *getNextBlock() {return att_next;};
 	std :: string getFullData();
+	bool isPlayer() {return att_data[0] == 'P';};
+	int giveScore();
 };
 
 class blockchain {
@@ -30,6 +32,9 @@ public:
 	void emptyChain();
 	void saveChain(std :: string fileName);
 	void printChain();
+	bool isEmpty() {return att_head == NULL;};
+	int currentLevel();
+	void currentScores(int *scores);
 };
 
 #endif //VA_DP_BLOCKCHAIN
