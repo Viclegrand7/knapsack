@@ -8,4 +8,6 @@
 #include <random>
 #include <algorithm>
 
+#include "knapsack.hh"
+
 #define TOMAX	0

@@ -1,11 +1,5 @@
-#include <pthread.h>
-#include <sched.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "enetServer.h"
-#include "knapsack.hh"
+#include "blockchain.hh"
 
 ENetAddress address;
 ENetHost *server;
@@ -21,21 +15,14 @@ char mess[200];
 int nbConnectes;
 int estConnecte[4];
 
-int fsm;
+int maxWeight = 150;
+
+int computerScore(0);
+int playerScore(0);
+
+char *saveFileName("savefile.sav");
 
 int num;
-
-pthread_mutex_t lock_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t  started_cond = PTHREAD_COND_INITIALIZER;
-
-volatile int start;
-
-    unsigned int capacity = 750;
-    std::vector<int> weights{  70,73,77,80,82,87,90,94,98,106,110,113,115,118,120};
-    std::vector<int> profits{ 135,139,149,150,156,163,173,184,192,201,210,214,221,229,240};
-    size_t popsize = 100;
-    unsigned int maxit = 1000;
-
 
 void sendBroadcast(char *mess)
 {
@@ -55,96 +42,178 @@ void sendBroadcast(char *mess)
 
 	printf("len=%d %s\n",len,mess);
 
-	ENetPacket * packet = enet_packet_create (buffer, 10+len, ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket *packet = enet_packet_create (buffer, 10+len, ENET_PACKET_FLAG_RELIABLE);
 	enet_host_broadcast (server, 1, packet);
+}
+
+void sendTousConnectes()
+{
+	char mess[10];
+
+	sprintf(mess,"X");
+	sendBroadcast(mess);
+}
+
+void sendEstDejaConnecte(int d)
+{
+	printf("%d est déjà connecte\n",d);
+}
+
+void sendCommandeIllegale()
+{
+}
+
+void sendMap(char *m)
+{
+	char mess[500];
+
+	sprintf(mess,"M%s",m);
+	sendBroadcast(mess);
+}
+
+void sendBomb(int j,int y,int x)
+{
+	char mess[20];
+
+	sprintf(mess,"B%d%3.3d%3.3d",j,y,x);
+	sendBroadcast(mess);
+}
+
+void sendFlag(int j,int v,int y,int x)
+{
+	char mess[20];
+
+	sprintf(mess,"F%d%d%3.3d%3.3d",j,v,y,x);
+	sendBroadcast(mess);
+}
+
+void sendDiscovered(int j,int v,int y,int x)
+{
+	char mess[20];
+
+	sprintf(mess,"D%d%d%3.3d%3.3d",j,v,y,x);
+	sendBroadcast(mess);
+}
+
+void sendStop()
+{
+	char mess[20];
+
+	sprintf(mess,"S");
+	sendBroadcast(mess);
+}
+
+
+
+void handleKnapsack(void *values) {
+	char *allValues = (char *) values;
+	stringstream myStream(allValues);
+	std :: getline(myStream, numberOfItems, ',');
+	myStream >> numberOfItems;
+	std :: vector <int> weights;
+	std :: vector <int> values;
+	
+	int temporaryInteger;
+	for (int i = 0 ; i < numberOfItems ; ++i) {
+		std :: getline(myStream, temporaryInteger, ',');
+		weights.push_back(temporaryInteger);
+	}
+	for (int i = 0 ; i < numberOfItems ; ++i) {
+		std :: getline(myStream, temporaryInteger, ',');
+		values.push_back(temporaryInteger);
+	}
+
+	knapsack myKnapsack(weights, values, maxWeight, 100, 100);
+	population bestPop = myKnapsack.run();
+
+	char *message[100];
+	message[0] = 'C'; //Computer
+	for (unsigned int i = 0 ; i < bestPop.parent.size() ; ++i)
+		sprintf(message + 1 + i, "%d", bestPop.parent[i]);
+	sprintf(message + 90, "%d", bestPop.fitness);
+	sendBroadcast(message);
+	myChain.addBlock(message);
+}
+
+void addBlock(void *values) {
+	char *data = (char *) values;
+	myChain.addBlock(data);
 }
 
 void handleIncomingMessage()
 {
-	printf("fsm=%d\n",fsm);
-	switch (fsm)
-	{
-		case 0:
-			// start=1;
-                	if (pthread_mutex_lock(&lock_mutex)!=0)
-                        	printf("there is an error in pthread_mutex_lock in producer()\n");
+	switch recMess[0] {
+		case 'C':
+			int dir = recMess[1] - '0';
+			if (!estConnecte[dir]) {
+				++nbConnectes;
+				estConnecte[dir] = 1;
+				//sendEstConnecte(dir);
+			}
+			else
+				sendEstDejaConnecte(dir);
 
-			if (pthread_cond_broadcast(&started_cond)!=0)
-				printf("there is an error in pthread_cond_broadcast in producer()\n");
+			// Tout le monde est connecté, on envoie plein de choses
+			// aux interfaces graphiques.
+			if (nbConnectes == 1) {
+				sendTousConnectes();
 
-                	if (pthread_mutex_unlock(&lock_mutex)!=0)
-                        	printf("there is an error in pthread_mutek_unlock in producer()\n");
+				fsm=1;
+			}
+	break;
+		case 'L': //Loot. AI cannot access this event
+/*		char numberOfItems(recMess[1]);
+		int *allValues = malloc((2 * numberOfItems + 1) * sizeof(int));
+		allValues[0] = (int) numberOfItems;
+		for (char i = 0 ; i < numberOfItems ; ++i) {
+			allValues[i + 1] = (int) recMess[2 + i];
+			allValues[i + 1 + numberOfItems] = (int) recMess[2 + numberOfItems + i];
+		}
+		pthread_t knapsackThread;
+		int threadError(pthread_create(&knapsackThread, NULL, handleKnapsack, (void *) &allValues));
+		if (threadError)
+			std :: cout << "Error while creating thread: " << threadError << std :: endl;
+		pthread_join(knapsackThread, NULL);
+*/	break;
+		case 'P': //Planet
 
-			break;
+		//Need to redo it, send char * directly;
+
+/*		char numberOfItems(recMess[1]);
+		std :: vector <int> weights;
+		std :: vector <int> values;
+		for (char i = 0 ; i < numberOfItems ; ++i) {
+			weights.push_back(recMess[2 + i]);
+			values.push_back(recMess[2 + numberOfItems + i]);
+		}
+		pthread_t knapsackThread;
+		int threadError(pthread_create(&knapsackThread, NULL, handleKnapsack, (void *) &allValues));
+		if (threadError)
+			std :: cout << "Error while creating thread: " << threadError << std :: endl;
+		pthread_join(knapsackThread, NULL);
+*/	break;
+		case 'S': //Score
+		pthread_t blockchainThread;
+		recMess[0] = 'P'; //Player
+		playerScore = std :: atoi(recMess + 1);
+		int threadError(pthread_create(&blockchainThread, NULL, addBlock, (void *) recMess));
+		if (threadError)
+			std :: cout << "Error while creating thread: " << threadError << std :: endl;
+		pthread_join(blockchainThread, NULL);	
+	break;
 		default:
-			break;
-	}
-	printf("en sortant fsm=%d\n",fsm);
-}
-
-void heavyComputation()
-{
-        //volatile unsigned long long i;
-        unsigned long long i;
-
-        for (i=0;i<1000000000ULL;i++);
-}
-
-void* DoWork(void* args) {
-
-	while (1)
-	{
-		if (pthread_mutex_lock(&lock_mutex)!=0)
-			printf("there is an error in pthread_mutex_lock in DoWork()\n");
-
-		if (pthread_cond_wait(&started_cond,&lock_mutex)!=0)
-			printf("there is an error in pthread_cond_wait\n");
-
-		if (pthread_mutex_unlock(&lock_mutex)!=0)
-			printf("there is an error in pthread_mutek_unlock in DoWork()\n");
-
-    		printf("start ID: %lu, CPU: %d\n", pthread_self(), sched_getcpu());
-
-    /* Init solver */
-    Knapsack k(capacity, weights, profits, popsize, maxit);
-    /* Launch genetic algorithm */
-    k.run();
-    /* Print best solution found */
-    k.print_bestsol();
-
-		//heavyComputation();
-    		printf("end   ID: %lu, CPU: %d\n", pthread_self(), sched_getcpu());
-
+	break;
 	}
 }
 
 int main (int argc, char ** argv) 
 {
-    	pthread_attr_t attr;
-    	cpu_set_t cpus;
-    	pthread_attr_init(&attr);
-    	int i;
-
-    	int numberOfProcessors = sysconf(_SC_NPROCESSORS_ONLN);
-    	printf("Number of processors: %d\n", numberOfProcessors);
-
-    	pthread_t threads[numberOfProcessors];
-
-    	for (i = 0; i < numberOfProcessors; i++) 
-	{
-       		CPU_ZERO(&cpus);
-       		CPU_SET(i, &cpus);
-       		pthread_attr_setaffinity_np(&attr, sizeof(cpu_set_t), &cpus);
-       		pthread_create(&threads[i], &attr, DoWork, NULL);
-    	}
-
 	printf("enet_initialize()\n");
 
-	if (enet_initialize () != 0)
-	{
-        	fprintf (stderr, "An error occurred while initializing ENet.\n");
-        	return EXIT_FAILURE;
-    	}
+	if (enet_initialize () != 0) {
+		fprintf (stderr, "An error occurred while initializing ENet.\n");
+		return EXIT_FAILURE;
+    }
 
 	address.host = ENET_HOST_ANY;
 
@@ -152,52 +221,51 @@ int main (int argc, char ** argv)
 	printf("enet_host_create()\n");
 
 	server = enet_host_create (& address, 32, 2, 0, 0);
-	if (server == NULL)
-	{
-       		fprintf (stderr, 
-			"An error occurred while trying to create an ENet server host.\n");
-       		exit (EXIT_FAILURE);
-    	}
+	if (server == NULL) {
+		fprintf (stderr, "An error occurred while trying to create an ENet server host.\n");
+		exit (EXIT_FAILURE);
+	}
+
 
 	fsm=0;
 
-    	printf("before while() mainloop\n");
+	printf("before while() mainloop\n");
 
-   	while (1)
+/*   	while (1)
    	{
+*/		while (enet_host_service (server, &event, TOMAX) > 0)
+		{
+   			switch (event.type) {
+      			case ENET_EVENT_TYPE_CONNECT:
+         				printf ("A new client connected from %x:%u.\n", 
+				event.peer -> address.host, event.peer -> address.port);
+			break;
+      			case ENET_EVENT_TYPE_RECEIVE:
+         				//printf ("A packet of length %u containing %s was received from %s on channel %u.\n", 
+				//	(int)event.packet -> dataLength, 
+				//	(char*)event.packet -> data, 
+				//	(char*)event.peer -> data, (int)event.channelID);
+				peer=event.peer;
+				//strcpy(recMess,(char*)(event.packet->data)+9);
+				idx=0;
+				for (unsigned int i = 9 ; i < event.packet->dataLength; ++i) {
+					//printf("%c",(char)event.packet->data[i]);
+					recMess[idx++]=(char)event.packet->data[i];
+				}
+				recMess[idx++]='\0';
+				printf("recMess=|%s|\n",recMess);
+ 				enet_packet_destroy (event.packet);
 
-    		while (enet_host_service (server, &event, TOMAX) > 0)
-    		{
-       			switch (event.type)
-       			{
-          			case ENET_EVENT_TYPE_CONNECT:
-             				printf ("A new client connected from %x:%u.\n", 
-					event.peer -> address.host, event.peer -> address.port);
-             				break;
-          			case ENET_EVENT_TYPE_RECEIVE:
-             				//printf ("A packet of length %u containing %s was received from %s on channel %u.\n", 
-					//	(int)event.packet -> dataLength, 
-					//	(char*)event.packet -> data, 
-					//	(char*)event.peer -> data, (int)event.channelID);
-					peer=event.peer;
-					//strcpy(recMess,(char*)(event.packet->data)+9);
-					idx=0;
-					for (int i=9;i<(int)event.packet->dataLength;i++)
-					{
-						//printf("%c",(char)event.packet->data[i]);
-						recMess[idx++]=(char)event.packet->data[i];
-					}
-					recMess[idx++]='\0';
-					printf("recMess=|%s|\n",recMess);
-             				enet_packet_destroy (event.packet);
-					handleIncomingMessage();
-             				break;
-          			case ENET_EVENT_TYPE_DISCONNECT:
-             				printf ("%s disconnected FPX.\n", (char*)event.peer -> data);
-             				event.peer -> data = NULL;
-       			}
-    		}
-	}
+				handleIncomingMessage();
+			break;
 
+      			case ENET_EVENT_TYPE_DISCONNECT:
+					printf ("%s disconnected FPX.\n", (char*)event.peer -> data);
+					event.peer -> data = NULL;
+			break;
+   			}
+		}
+/*	}
+*/
 	atexit (enet_deinitialize);
 }
