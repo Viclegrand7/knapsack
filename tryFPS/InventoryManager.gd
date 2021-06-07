@@ -50,6 +50,7 @@ func _ready():
 	var file = File.new()
 	file.open(ressourcePath + fileName, File.READ)
 	var itemList = file.get_line()
+#	print(itemList)
 	fullItemNamesList = JSON.parse(itemList).result
 	var dictionary = file.get_line()
 	itemStatisticsDictionary = JSON.parse(dictionary).result
@@ -66,7 +67,7 @@ func createPlanetInventory():
 			playerInventory.erase(i)
 			vendorPossibilitiesInventory.erase(i)
 
-	get_node("/tree/MotherNode").sendToServer(str(playerScore))
+	get_node("/root/MotherNode").sendToServer("S" + str(playerScore))
 	vendorInventory = []
 
 
@@ -77,12 +78,18 @@ func createPlanetInventory():
 	
 	var planetGravity = 0
 	
+	var stringKnapsackValues = ""
+	var stringKnapsackWeights = ""
+	
 	for i in vendorInventory:
 		i.setWeightValue(planetGravity)
 		var newSlot = getPlanetFreeSlot()
 		newSlot.item = i
 		newSlot.add_child(i)
 		newSlot.refreshColors()
+		stringKnapsackValues += "," + str(i.giveValue())
+		stringKnapsackWeights += "," + str(i.giveWeight())
+	get_node("/root/MotherNode").sendToServer("P" + str(vendorInventory.size()) + stringKnapsackWeights + stringKnapsackValues)
 
 func createLootingInventory():
 	vendorPossibilitiesInventory = fullItemList.duplicate()
@@ -90,7 +97,6 @@ func createLootingInventory():
 		for i in playerInventory:
 			i.setWeightValue(0)
 			vendorPossibilitiesInventory.erase(i)
-			print(vendorPossibilitiesInventory)
 
 	vendorInventory = []
 
@@ -122,5 +128,13 @@ func _on_DoneButton_pressed():
 	for slot in playerInventoryManager.slotList:
 		if slot.item:
 			playerInventory.append(slot.item)
+			slot.remove_child(slot.item);
+			slot.item = null;
+			slot.refreshColors();
+	for slot in planetInventoryManager.slotList:
+		if slot.item:
+			slot.remove_child(slot.item);
+			slot.item = null;
+			slot.refreshColors();
+	playerInventoryManager.weightLabel.set_text("Weight: 0")
 	emit_signal("onButtonPressed")
-	

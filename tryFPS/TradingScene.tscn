@@ -72,6 +72,7 @@ centered = false
 [node name="fade_bg" type="AnimationPlayer" parent="."]
 anims/fade_in = SubResource( 1 )
 anims/fade_out = SubResource( 2 )
+
 [connection signal="finished" from="takeoff" to="." method="_on_takeoff_finished"]
 [connection signal="finished" from="landing" to="." method="_on_landing_finished"]
 [connection signal="animation_finished" from="fade_bg" to="." method="_on_fade_bg_animation_finished"]

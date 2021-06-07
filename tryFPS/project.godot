@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Try Fps"
+config/name="try FPS"
 run/main_scene="res://StartMenuScene.tscn"
 config/icon="res://icon.png"
 

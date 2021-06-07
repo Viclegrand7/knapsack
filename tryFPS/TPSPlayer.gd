@@ -182,7 +182,6 @@ func process_input(_delta):
 	# ----------------------------------
 	#Looting corpses
 	if Input.is_action_pressed("Interact"):
-		get_node("/root/MotherNode").sendToServer("S300")
 		if canLoot:
 			if not canLoot.looted:
 				canLoot.looted = true
@@ -196,12 +195,11 @@ func process_input(_delta):
 			hideLootingText()
 			
 			# Remove the current level
-			var level = root.get_node("Testing_Space")
+			var level = root.get_node(root.spaceLists[root.counter])
 			root.remove_child(level)
 			level.call_deferred("free")
 			# Add the next level
-			var next_level_resource = load("res://Testing_Space_2.tscn")
-			#var next_level_resource = load("res://Testing_Space.tscn")
+			var next_level_resource = load("res://TradingScene.tscn")
 			var next_level = next_level_resource.instance()
 			root.add_child(next_level)
 			root.move_child(next_level, 0)

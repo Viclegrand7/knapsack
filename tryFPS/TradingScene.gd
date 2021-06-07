@@ -12,7 +12,7 @@ var isMouseCaptured = true
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	inventory.connect("onButtonPressed", self, "_on_DoneButton_pressed")
-	print(inventory)
+	inventory.createPlanetInventory()
 	#inventory.show()
 	takeoff.hide()
 	landing.show()
@@ -28,7 +28,6 @@ func _process_input(_delta):
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _on_landing_finished():
-	print("landing done")
 	bgBlurred.show()
 	player.play("fade_in")
 	yield(player, "animation_finished")
@@ -46,11 +45,10 @@ func _on_DoneButton_pressed():
 	takeoff.play()
 	yield(takeoff, "finished")
 	
-	var level = root.get_node("Testing_Space_2")
+	var level = root.get_children()[0]
 	root.remove_child(level)
 	level.call_deferred("free")
 	# Add the next level
-	var next_level_resource = load("res://TradingScene.tscn")
-	#var next_level_resource = load("res://Testing_Space.tscn")
+	var next_level_resource = load(root.nextScene() + ".tscn")
 	var next_level = next_level_resource.instance()
 	root.add_child(next_level)
