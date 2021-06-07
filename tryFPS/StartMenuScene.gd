@@ -26,7 +26,7 @@ func _ready():
 	activate_main_buttons()
 
 func _button_pressed():
-	print("Hello world!")
+	print("Привет, мир! (hello world - kosmojet version)")
 
 func disable_hide_main_buttons():
 	mainNG.disabled = true

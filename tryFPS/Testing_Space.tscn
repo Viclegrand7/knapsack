@@ -2,13 +2,13 @@
 
 [ext_resource path="res://ship2_modif.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Kosmojet_3U.tscn" type="PackedScene" id=2]
-[ext_resource path="res://174550599_925620861594430_401748151133299725_n.png" type="Texture" id=4]
+[ext_resource path="res://assets/spacebgs/Galaxy-constellation-starry-space_3840x2160.jpg" type="Texture" id=3]
 [ext_resource path="res://LootingText.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/spaceship/crosshair.png" type="Texture" id=6]
 [ext_resource path="res://assets/planets/planet_a.tscn" type="PackedScene" id=7]
 
 [sub_resource type="PanoramaSky" id=1]
-panorama = ExtResource( 4 )
+panorama = ExtResource( 3 )
 
 [sub_resource type="Environment" id=2]
 background_mode = 2
@@ -28,12 +28,12 @@ __meta__ = {
 [node name="EnnemyShip" parent="." groups=[
 "Ennemies",
 ] instance=ExtResource( 1 )]
-transform = Transform( 0.0857081, 0.033015, 0.491492, -0.0056717, 0.498909, -0.0325242, -0.492567, -2.23517e-08, 0.0858955, 30.2119, 0.442828, -0.115174 )
+transform = Transform( 0.187015, 0.0322821, 0.462584, -0.0056717, 0.498909, -0.0325242, -0.463674, 0.00691772, 0.186973, 191.199, 0.442828, 46.5765 )
 
 [node name="Player" parent="." groups=[
 "Player",
 ] instance=ExtResource( 2 )]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -14.4567, 0, 0 )
+transform = Transform( 0.0851828, 0, -0.0523822, 0, 0.1, 0, 0.0523822, 0, 0.0851828, -14.4567, 0, 0 )
 
 [node name="LootingText" parent="." instance=ExtResource( 5 )]
 visible = false
@@ -44,4 +44,4 @@ scale = Vector2( 0.4, 0.4 )
 texture = ExtResource( 6 )
 
 [node name="planet_a" parent="." instance=ExtResource( 7 )]
-transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 263.362, 0, -325.672 )
+transform = Transform( 100, 0, 0, 0, 100, 0, 0, 0, 100, 313.651, 0, 202.08 )
