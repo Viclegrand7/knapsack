@@ -135,8 +135,8 @@ func _on_Area_body_exited(body):
 func _on_Area2_body_entered(body):
 	if not isAlive:
 		if body.is_in_group("Player"):
-			body.showLootingText()
 			if not looted:
+				body.showLootingText()
 				body.canLoot = self
 
 func _on_Area2_body_exited(body):

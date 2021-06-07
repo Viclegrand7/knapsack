@@ -64,7 +64,7 @@ func createPlanetInventory():
 	vendorPossibilitiesInventory = fullItemList.duplicate()
 	if playerInventory.size():
 		for i in playerInventory:
-			playerScore += i.giveValue()
+			#playerScore += i.giveValue()
 			playerInventory.erase(i)
 			vendorPossibilitiesInventory.erase(i)
 
@@ -139,3 +139,5 @@ func _on_DoneButton_pressed():
 	playerInventoryManager.weightLabel.set_text("Weight: 0")
 	get_node("/root/MotherNode").sendToServer("S" + str(playerScore))
 	emit_signal("onButtonPressed")
+	playerScore = int(playerInventoryManager.valueLabel.get_text())
+	print(playerScore)

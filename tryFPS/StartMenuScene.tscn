@@ -151,6 +151,7 @@ texture = ExtResource( 15 )
 "anims/Fade out" = SubResource( 6 )
 
 [node name="Label" type="Label" parent="."]
+visible = false
 margin_left = 800.0
 margin_top = 540.0
 margin_right = 1200.0

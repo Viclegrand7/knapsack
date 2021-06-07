@@ -19,7 +19,8 @@ var isGamePresent = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	if get_node("/root/MotherNode").counter > 4:
+	if get_node("/root/MotherNode").counter > 0:
+		$Label.show()
 		end_game()
 		return
 	# boutons désactivés tant que l'on n'est pas connecté
@@ -63,4 +64,4 @@ func activate_main_buttons():
 
 func end_game():
 	disable_hide_main_buttons()
-	$label.set_text("Your Score : %d\nComputer Score : %d" %[get_node("/root/MotherNode/Inventory").playerScore, get_node("/root/MotherNode/Inventory").computerScore])
+	$Label.set_text("Your Score : %d\nComputer Score : %d" %[get_node("/root/MotherNode/Inventory").playerScore, get_node("/root/MotherNode/Inventory").computerScore])

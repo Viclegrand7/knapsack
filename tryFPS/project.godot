@@ -21,7 +21,7 @@ _global_script_class_icons={
 [application]
 
 config/name="try FPS"
-run/main_scene="res://StartMenuScene.tscn"
+run/main_scene="res://MotherNode.tscn"
 config/icon="res://icon.png"
 
 [autoload]
