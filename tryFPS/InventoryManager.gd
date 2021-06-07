@@ -7,6 +7,7 @@ const ressourcePath = "res://assets/items/"
 const fileName = "statistics"
 
 export var playerScore : int = 0 #Total value
+export var computerScore : int = 0
 export var playerInventory : Array #Our current inventory, used to sell items
 
 export var fullItemNamesList : Array#All the item names we added ourself
@@ -67,7 +68,6 @@ func createPlanetInventory():
 			playerInventory.erase(i)
 			vendorPossibilitiesInventory.erase(i)
 
-	get_node("/root/MotherNode").sendToServer("S" + str(playerScore))
 	vendorInventory = []
 
 
@@ -137,4 +137,5 @@ func _on_DoneButton_pressed():
 			slot.item = null;
 			slot.refreshColors();
 	playerInventoryManager.weightLabel.set_text("Weight: 0")
+	get_node("/root/MotherNode").sendToServer("S" + str(playerScore))
 	emit_signal("onButtonPressed")

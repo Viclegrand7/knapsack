@@ -15,7 +15,7 @@ func _ready():
 	get_tree().set_network_peer(network)
 	mplayer = get_tree().multiplayer
 	mplayer.connect("network_peer_packet",self,"_on_packet_received")
-	_wait(1.5)
+	_wait(3)
 	sendToServer("C")
 
 func sendToServer(message):
@@ -23,23 +23,28 @@ func sendToServer(message):
 
 func _on_packet_received(_id, packet):
 	var message = packet.get_string_from_ascii()
+	print(message)
 	if message[0] == 'X':
 		connectionSuccess = true
 		print("SUCCESSSSSS")
 	elif message[0] == 'C':
-		var computerScore = int(message.right(1))
-		print(computerScore)
-	elif message[0] == 'P':
-		var playerScore = int(message.right(1))
-		print(playerScore)
+		$Inventory.computerScore = int(message.right(1))
 	elif message[0] == 'R':
 		var infos = (message.right(1)).split(',')
-		var currentLevel = infos[0]
-		var playerScore = infos[1]
-		var computerScore = infos[2]
+		counter = int(infos[0])
+		$Inventory.playerScore = int(infos[1])
+		$Inventory.computerScore = int(infos[2])
 		print(infos)
+		var level = get_node(spaceLists[0])
+		remove_child(level)
+		level.call_deferred("free")
+		# Add the next level
+		var next_level_resource = load(spaceLists[counter])
+		var next_level = next_level_resource.instance()
+		add_child(next_level)
+		move_child(next_level, 0)
 	else:
-		print("WTF ", message)
+		print("Unknown message: ", message)
 
 
 func nextScene():

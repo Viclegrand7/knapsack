@@ -1,5 +1,6 @@
 #include "enetServer.h"
 #include "blockchain.hh"
+#include "knapsack.hh"
 #include <pthread.h>
 #include <sstream>
 
@@ -29,7 +30,7 @@ pthread_mutex_t blockchainMutex;
 
 int num;
 
-void sendBroadcast(char *mess) {
+void sendBroadcast(char *message) {
 	char buffer[500];
 
 	//for (int i=0;i<12;i++)
@@ -38,23 +39,23 @@ void sendBroadcast(char *mess) {
 	//buffer[8]=1;
 	buffer[8]=4;
 
-	int len=strlen(mess);
-	int cpt=0;
-	for (cpt=0;cpt<len;cpt++)
-		buffer[9+cpt]=mess[cpt];
-	buffer[9+cpt]=0;
+	int len=strlen(message);
+	int counter=0;
+	for (counter=0;counter<len;counter++)
+		buffer[9+counter]=message[counter];
+	buffer[9+counter]=0;
 
-	printf("len=%d %s\n",len,mess);
+	printf("len=%d %s\n", len, message);
 
 	ENetPacket *packet = enet_packet_create (buffer, 10+len, ENET_PACKET_FLAG_RELIABLE);
-	enet_host_broadcast (server, 1, packet);
+	enet_host_broadcast(server, 1, packet);
 }
 
 void sendTousConnectes() {
-	char mess[10];
+	char message[10];
 
-	sprintf(mess,"X");
-	sendBroadcast(mess);
+	sprintf(message,"X");
+	sendBroadcast(message);
 }
 
 void sendEstDejaConnecte(int d) {
@@ -83,7 +84,7 @@ void *handleKnapsack(void *values) {
 			pthread_mutex_unlock(&knapsackMutex);
 			int numberOfItems;
 			std :: vector <int> weights;
-			std :: vector <int> values;
+			std :: vector <int> valuesK;
 			myStream >> numberOfItems >> trashComa;
 			for (int i = 0 ; i < numberOfItems ; ++i) {
 				myStream >> temporaryInteger >> trashComa;
@@ -91,11 +92,11 @@ void *handleKnapsack(void *values) {
 			}
 			for (int i = 0 ; i < numberOfItems ; ++i) {
 				myStream >> temporaryInteger >> trashComa;
-				values.push_back(temporaryInteger);
+				valuesK.push_back(temporaryInteger);
 			}
 
-			knapsack myKnapsack(weights, values, maxWeight, 100, 100);
-			population bestPop = myKnapsack.run();
+			knapsack myKnapsack(weights, valuesK, maxWeight, 100, 100);
+			struct population bestPop = myKnapsack.run();
 
 			std :: string message("C");
 			for (unsigned int i = 0 ; i < bestPop.parent.size() ; ++i)
@@ -116,7 +117,7 @@ void *handleKnapsack(void *values) {
 
 void *handleBlockchain(void *values) {
 	std :: vector <std :: string> **datas = (std :: vector <std :: string> **) values;
-	std :: vector <std :: string> *knapsackValues = datas[0];
+//	std :: vector <std :: string> *knapsackValues = datas[0];
 	std :: vector <std :: string> *blockchainValues = datas[1];
 
 
@@ -135,7 +136,6 @@ void *handleBlockchain(void *values) {
 		unsigned int size = blockchainValues->size();
 		pthread_mutex_unlock(&blockchainMutex);
 		if (size) {
-			std :: cout << "Not empty\n" << std :: endl;
 			pthread_mutex_lock(&blockchainMutex);
 			std :: string data(blockchainValues->front());
 			std :: cout << data << std :: endl;
@@ -157,7 +157,6 @@ void handleIncomingMessage(void *values) {
 	std :: vector <std :: string> *knapsackValues = datas[0];
 	std :: vector <std :: string> *blockchainValues = datas[1];
 
-	std :: cout << "Received " << recMess << std :: endl;
 	switch (recMess[0]) {
 		case 'C':
 		{
@@ -196,7 +195,6 @@ void handleIncomingMessage(void *values) {
 		break;
 	case 'P': //Planet
 	{
-		char numberOfItems(recMess[1]);
 		pthread_mutex_lock(&knapsackMutex);
 		knapsackValues->push_back(recMess + 1);
 		pthread_mutex_unlock(&knapsackMutex);
@@ -204,7 +202,6 @@ void handleIncomingMessage(void *values) {
 		break;
 	case 'S': //Score
 	{
-		pthread_t blockchainThread;
 		recMess[0] = 'P'; //Player
 
 		pthread_mutex_lock(&blockchainMutex);
@@ -289,6 +286,8 @@ int main (int argc, char ** argv) {
 	  			case ENET_EVENT_TYPE_DISCONNECT:
 					printf ("%s disconnected FPX.\n", (char*)event.peer -> data);
 					event.peer -> data = NULL;
+			break;
+				default:
 			break;
 			}
 		}

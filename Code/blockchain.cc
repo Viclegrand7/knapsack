@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-block :: block(std :: string previousHash, std :: string data, int blockNumber) : att_nonce(-1), att_data(data), att_blockNumber(blockNumber), att_next(NULL) {
+block :: block(std :: string previousHash, std :: string data, int blockNumber) : att_blockNumber(blockNumber), att_data(data), att_nonce(-1), att_next(NULL) {
     do {
         std :: string input(std :: to_string(att_blockNumber) + previousHash + att_data + std :: to_string(++att_nonce));
         att_currentHash = sha256(input);
@@ -117,10 +117,8 @@ void blockchain :: saveChain(std :: string fileName) {
         return; //Error
 
     block *currentHead(att_head);
-    block *previousHead;
     while (currentHead->getNextBlock()) {
         myFile << currentHead->getFullData();
-        previousHead = currentHead;
         currentHead = currentHead->getNextBlock();
     }
     myFile << currentHead->getFullData();

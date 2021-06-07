@@ -10,7 +10,7 @@ CFLAGS = -g -Wall -Werror -Wshadow -Wunreachable-code \
 
 DEPFLGS = -MT $@ -MMD -MP -MF $*.Td
 
-DBGFLG = $(filter debug testDebug, $(MAKECMDGOALS))
+DBGFLG = $(filter debug test, $(MAKECMDGOALS))
 REALFLGS = $(if $(DBGFLG), $(CFLAGS), $(RLSFLG))
 
 COMPILE = $(CC) $(DEPFLGS) $(REALFLGS) -c
